@@ -30,12 +30,26 @@ const Navbar = () => {
           </a>
         </nav>
 
-        {/* CTA Button */}
+        {/* CTA Button (Desktop) */}
         <a
           href="#"
-          className="hidden md:inline-block bg-yellow-400 text-black text-sm font-semibold py-2 px-4 rounded-full hover:bg-yellow-500 transition"
+          className="hidden md:inline-flex items-center gap-2 bg-customGold text-white text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-500 transition"
         >
-          Explore location →
+          Explore location
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M7 17L17 7M7 7h10v10"
+            />
+          </svg>
         </a>
 
         {/* Hamburger Icon */}
@@ -83,9 +97,23 @@ const Navbar = () => {
           </a>
           <a
             href="#"
-            className="block bg-yellow-400 text-black text-sm font-semibold py-2 px-4 rounded-full hover:bg-yellow-500 transition"
+            className="inline-flex items-center gap-2 bg-customGold text-white text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-500 transition"
           >
-            Explore location →
+            Explore location
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M7 17L17 7M7 7h10v10"
+              />
+            </svg>
           </a>
         </div>
       )}

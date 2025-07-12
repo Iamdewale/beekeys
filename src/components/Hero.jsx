@@ -26,24 +26,39 @@ const Hero = () => {
           </p>
         </div>
 
-        {/* Heading & paragraph */}
+        {/* Heading */}
         <h1 className="text-5xl sm:text-5xl font-bold mb-4 leading-tight">
           Find and connect with trusted places, businesses, and services
           <br className="hidden sm:inline" /> around you
         </h1>
         <p className="text-gray-600 text-base sm:text-lg mb-6">
-          From towns and cities to states, provinces and countries, we help your LOCAL space
-          stand out on a CONTINENTAL Stage. It all starts when you List, Search, or Share.
+          From towns and cities to states, provinces and countries, we help your
+          LOCAL space stand out on a CONTINENTAL Stage. It all starts when you
+          List, Search, or Share.
         </p>
         <a
           href="#"
-          className="inline-block bg-customGold text-black font-medium px-6 py-3 rounded-full hover:bg-yellow-500 transition"
+          className="inline-flex items-center gap-2 bg-customGold text-white font-medium px-6 py-3 rounded-full hover:bg-yellow-500 transition"
         >
-          Explore location →
+          Explore location
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M7 17L17 7M7 7h10v10"
+            />
+          </svg>
         </a>
       </div>
 
-      {/* Responsive Hero Image with overlay */}
+      {/*Hero Image with overlay */}
       <div className="relative mt-10 mx-auto px-4 w-full max-w-6xl">
         <div className="relative w-full h-[240px] sm:h-[320px] md:h-[412px]">
           <img
