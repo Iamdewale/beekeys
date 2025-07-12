@@ -21,10 +21,6 @@ function App() {
       <Listings />
       <Testimonials /> 
       <Footer />
-
-
-      {/* <Services /> */}
-      {/* <HowItWorks /> */}
     </div>
   );
 }
