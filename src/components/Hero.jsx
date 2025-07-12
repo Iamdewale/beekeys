@@ -38,12 +38,12 @@ const Hero = () => {
         </p>
         <a
           href="#"
-          className="inline-flex items-center gap-2 bg-customGold text-white font-medium px-6 py-3 rounded-full hover:bg-yellow-500 transition"
+          className="inline-flex items-center gap-2 bg-customGold text-white font-medium px-6 py-3 rounded-full hover:bg-yellow-500 transition group whitespace-nowrap"
         >
           Explore location
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="w-4 h-4"
+            className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
