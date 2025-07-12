@@ -1,70 +1,124 @@
-# Getting Started with Create React App
+# 🐝 BEEKEYS - Verified Business Directory
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**BEEKEYS** is a modern, trust-backed business listing platform that lets users browse, verify, and connect with local businesses—each uniquely identified by a Beekey handle (e.g., `@coffeeshop`). Built with React, Tailwind CSS, and SwiperJS.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- 🔎 **Search or Browse** businesses by category or location.
+- ✅ **Verified Listings** with trust badges and manual review.
+- 📍 **Location-aware listings** and sharing options.
+- 💬 **Customer Testimonials** with glassmorphism UI.
+- 📱 **Responsive Swiper carousel** for mobile experiences.
+- 🌐 **Fast and lightweight** frontend using TailwindCSS.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🛠️ Tech Stack
 
-### `npm test`
+| Frontend         | UI Framework       | Carousel         | State/Data     |
+|------------------|--------------------|------------------|----------------|
+| React (Vite/CRA) | Tailwind CSS       | SwiperJS         | JSON + useEffect |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## 📁 Folder Structure
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+/public
+└── assets
+└── data.json # Business listings
+/src
+├── assets/images # Static images
+├── components # Modular React components
+│ ├── Hero.jsx
+│ ├── Features.jsx
+│ ├── Listings.jsx
+│ ├── HowWeWork.jsx
+│ ├── Testimonials.jsx
+│ ├── Services.jsx
+│ └── Navbar/Footer.jsx
+├── App.js # Main App wrapper
+├── index.js # React root rendering
+└── tailwind.config.js # Tailwind theme config
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+ **Clone the repository**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+   ```bash
+   git clone https://github.com/your-username/beekeys.git
+   cd beekeys
 
-### `npm run eject`
+   Install dependencies
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+npm install
+Run the project
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+npm run dev   # or npm start (if using CRA)
+Open in browser
+Visit http://localhost:5173 (or your local port) to view the app.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+🧩 Components Breakdown
+🔸 Hero.jsx
+Catchy landing hero with call-to-action.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Includes an animated header and tagline.
 
-## Learn More
+🔸 Listings.jsx
+Loads businesses dynamically from data.json.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Cards include image, category, location, and rating badge.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+🔸 HowWeWork.jsx
+Step-by-step user onboarding flow.
 
-### Code Splitting
+Uses Swiper for mobile + Grid for desktop.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+🔸 Testimonials.jsx
+Customer quote in a glassmorphic card overlaying a custom background image.
 
-### Analyzing the Bundle Size
+Styled using backdrop-blur-md and bg-white/20.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+🖼️ Sample Listings (data.json)
+[
+  {
+    "id": 1,
+    "name": "Coffee Central",
+    "category": "Cafe",
+    "location": "Lagos",
+    "image": "https://source.unsplash.com/coffee",
+    "rating": 4.5
+  }
+]
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+🎨 Tailwind Customization
+bg-customGold defined in tailwind.config.js as:
 
-### Advanced Configuration
+colors: {
+  customGold: '#D4AF37'}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+📦 Dependencies
+React
 
-### Deployment
+Tailwind CSS
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Swiper (swiper/react)
 
-### `npm run build` fails to minify
+Vite / CRA
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Icons (e.g. Heroicons or FontAwesome - optional)
+
+📌 To-Do
+ Add backend API integration
+
+ Business claim flow
+
+ Pagination for listings
+
+ Admin panel for approval
+
+ Auth integration (OAuth or Firebase)
+
+
+ 🌐 Demo
+🔗 Live Preview — replace with your deployed site
