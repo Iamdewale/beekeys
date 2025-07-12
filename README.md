@@ -1,6 +1,7 @@
 # 🐝 BEEKEYS - Verified Business Directory
 
-**BEEKEYS** is a modern, trust-backed business listing platform that lets users browse, verify, and connect with local businesses—each uniquely identified by a Beekey handle (e.g., `@coffeeshop`). Built with React, Tailwind CSS, and SwiperJS.
+**BEEKEYS** is a modern, trust-backed business listing platform that lets users browse, verify, and connect with local businesses—each uniquely identified by a Beekey handle 
+(e.g., @coffeeshop). Built with React, Tailwind CSS, and SwiperJS.
 
 ---
 
@@ -44,7 +45,7 @@
 
  **Clone the repository**
 
-   ```bash
+
    git clone https://github.com/your-username/beekeys.git
    cd beekeys
 
