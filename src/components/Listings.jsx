@@ -11,7 +11,6 @@ const Listings = () => {
       .catch((err) => console.error("Failed to load listings", err));
   }, []);
 
-  // Generate star icons based on rating
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -35,27 +34,30 @@ const Listings = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-20">
-      <h2 className="text-4xl font-bold mb-10">Popular Listings</h2>
+      {/* Section Title */}
+      <h2 className="text-4xl font-bold text-center mb-12">Popular Listings</h2>
+
+      {/* Grid of Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
         {businesses.map((biz) => (
           <div
             key={biz.id}
-            className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition"
+            className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
           >
             <img
               src={biz.image}
               alt={biz.name}
               className="w-full h-48 object-cover"
             />
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-xl font-semibold">{biz.name}</h3>
-              </div>
-              <p className="text-gray-600 text-sm">{biz.category}</p>
-              <p className="text-gray-500 text-xs mb-2">{biz.location}</p>
+            <div className="p-5 space-y-2">
+              <h3 className="text-lg font-semibold text-gray-800">
+                {biz.name}
+              </h3>
+              <p className="text-sm text-gray-500">{biz.category}</p>
+              <p className="text-xs text-gray-400">{biz.location}</p>
 
-              {/* Star Rating Badge */}
-              <div className="flex items-center space-x-1 text-sm text-yellow-600">
+              {/* Star Rating */}
+              <div className="flex items-center space-x-1 text-yellow-500 text-sm mt-2">
                 {renderStars(biz.rating)}
                 <span className="ml-2 text-gray-600 font-medium">
                   {biz.rating.toFixed(1)}
