@@ -1,3 +1,5 @@
+import arrowImage from "../assets/images/service-arrow.png";
+
 const services = [
   {
     id: "01",
@@ -22,16 +24,27 @@ const services = [
 const Services = () => {
   return (
     <section className="max-w-7xl mx-auto py-20 px-4">
+      {/* Top Text */}
       <p className="text-sm text-gray-500">What we do</p>
-      <h2 className="text-5xl font-bold mt-2 mb-10">Services</h2>
 
+      {/* Heading with Arrow */}
+      <div className="flex items-center justify-between mb-10">
+        <h2 className="text-5xl font-bold">Services</h2>
+        <img
+          src={arrowImage}
+          alt="Arrow"
+          className="h-[2.8rem] w-auto object-contain"
+        />
+      </div>
+
+      {/* Services List */}
       <div className="border-y border-gray-300 divide-y divide-gray-300">
         {services.map((service) => (
           <div
             key={service.id}
             className="grid grid-cols-1 md:grid-cols-3 gap-6 py-16 items-start md:items-center"
           >
-            {/* LEFT COLUMN */}
+            {/* Left Column */}
             <div className="md:col-span-2 border-r border-gray-300 pr-6">
               <h3 className="text-customGold text-5xl md:text-6xl font-extrabold leading-tight pb-20">
                 {service.title.split("/").map((line, idx) => (
@@ -42,18 +55,17 @@ const Services = () => {
                 ))}
               </h3>
 
-              {/* Description + Button */}
               <div className="flex justify-between items-center gap-4">
                 <p className="text-sm text-gray-600 max-w-xl">
                   {service.description}
                 </p>
-                <button className="px-4 py-2 bg-white-400 border border-black-1 text-black rounded-full text-sm font-medium hover:bg-black hover:text-customGold transition whitespace-nowrap">
+                <button className="px-4 py-2 border border-black text-black rounded-full text-sm font-medium hover:bg-black hover:text-customGold transition whitespace-nowrap">
                   Explore more →
                 </button>
               </div>
             </div>
 
-            {/* RIGHT COLUMN (ID number) */}
+            {/* Right Column */}
             <div className="text-right text-6xl md:text-9xl font-semibold text-customGold mt-4 md:mt-0">
               {service.id}
             </div>
