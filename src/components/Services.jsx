@@ -42,20 +42,24 @@ const Services = () => {
         {services.map((service) => (
           <div
             key={service.id}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 py-16 items-start md:items-center"
+            className="flex flex-col md:flex-row gap-6 py-16 items-start md:items-center"
           >
-            {/* Left Column */}
-            <div className="md:col-span-2 border-r border-gray-300 pr-6">
-              <h3 className="text-customGold text-5xl md:text-6xl font-extrabold leading-tight pb-20">
-                {service.title.split("/").map((line, idx) => (
-                  <div key={idx}>
-                    {line.trim()}
-                    {idx < service.title.split("/").length - 1 && "/"}
-                  </div>
-                ))}
-              </h3>
+            {/* Left Side with Title and Description */}
+            <div className="md:w-2/3 border-r border-gray-300 pr-6">
+              {/* Title and ID in the same line */}
+              <div className="flex justify-between items-start md:items-center flex-wrap gap-y-4 pb-20">
+                <h3 className="text-customGold text-5xl md:text-6xl font-extrabold leading-tight">
+                  {service.title.split("/").map((part, idx, arr) => (
+                    <div key={idx}>
+                      {part.trim()}
+                      {idx < arr.length - 1 && "/"}
+                    </div>
+                  ))}
+                </h3>
+              </div>
 
-              <div className="flex justify-between items-center gap-4">
+              {/* Description + Button */}
+              <div className="flex justify-between items-center flex-wrap gap-4 mt-8">
                 <p className="text-sm text-gray-600 max-w-xl">
                   {service.description}
                 </p>
@@ -65,8 +69,8 @@ const Services = () => {
               </div>
             </div>
 
-            {/* Right Column */}
-            <div className="text-right text-6xl md:text-9xl font-semibold text-customGold mt-4 md:mt-0">
+            {/* Right Side with ID */}
+            <div className="md:w-1/3 text-right text-5xl md:text-9xl font-semibold text-customGold mt-6 md:mt-0 pl-6">
               {service.id}
             </div>
           </div>
