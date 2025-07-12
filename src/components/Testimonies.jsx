@@ -1,6 +1,6 @@
 export default function Testimonials() {
   return (
-    <section className="max-w-7xl mx-auto py-10 px-4">
+    <section className="max-w-7xl mx-auto py-20 px-4">
       <p className="text-1 font-semibold text-gray-500">
         What people are saying about us
       </p>

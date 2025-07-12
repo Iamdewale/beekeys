@@ -33,9 +33,9 @@ const Listings = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-20">
+    <section className="max-w-7xl mx-auto px-4 pb-10">
       {/* Section Title */}
-      <h2 className="text-4xl font-bold text-center mb-12">Popular Listings</h2>
+      <h2 className="text-4xl font-bold mb-12">Popular Listings</h2>
 
       {/* Grid of Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
