@@ -30,7 +30,7 @@ const Navbar = () => {
           </a>
         </nav>
 
-        {/* CTA Button (Desktop) */}
+        {/* CTA Button - Desktop */}
         <a
           href="#"
           className="hidden md:inline-flex items-center gap-2 bg-customGold text-white text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-500 transition group whitespace-nowrap"

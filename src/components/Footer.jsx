@@ -3,7 +3,7 @@ import { FaFacebookF, FaInstagram, FaXTwitter } from "react-icons/fa6";
 export default function Footer() {
   return (
     <>
-      {/* CTA Section with Map Background and Rounded Top Corners */}
+      {/* CTA Section  */}
       <div
         className="bg-cover bg-center bg-no-repeat rounded-t-3xl overflow-hidden"
         style={{
@@ -23,7 +23,7 @@ export default function Footer() {
               even countries.
             </p>
 
-            {/* Button with 50% opacity background */}
+            {/* Button */}
             <button className="bg-yellow-400/50 border border-yellow-400 px-10 py-2 rounded-md hover:bg-yellow-400 transition group">
               <span className="text-yellow-400 group-hover:text-black font-medium">
                 Explore location

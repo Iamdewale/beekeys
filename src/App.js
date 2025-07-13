@@ -9,13 +9,13 @@ import HowWeWork from "./components/HowWeWorks";
 import Listings from "./components/Listings";
 import Testimonials from "./components/Testimonies";
 import Footer from "./components/Footer";
-// import other components...
+
 
 function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500); // Simulate load delay
+    const timer = setTimeout(() => setLoading(false), 1500); 
     return () => clearTimeout(timer);
   }, []);
   return loading ? <Loader /> : (

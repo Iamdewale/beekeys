@@ -27,7 +27,7 @@ const Services = () => {
       {/* Top Text */}
       <p className="text-sm text-gray-500">What we do</p>
 
-      {/* Heading with Arrow */}
+      {/* Heading */}
       <div className="flex items-center justify-between mb-10">
         <h2 className="text-5xl font-bold">Services</h2>
         <img
@@ -46,7 +46,7 @@ const Services = () => {
           >
             {/* Left Side with Title and Description */}
             <div className="md:w-2/3 border-r border-gray-300 pr-6">
-              {/* Title and ID in the same line */}
+              {/* Title */}
               <div className="flex justify-between items-start md:items-center flex-wrap gap-y-4 pb-20">
                 <h3 className="text-customGold text-5xl md:text-6xl font-extrabold leading-tight">
                   {service.title.split("/").map((part, idx, arr) => (
@@ -58,7 +58,7 @@ const Services = () => {
                 </h3>
               </div>
 
-              {/* Description + Button */}
+              {/* Description */}
               <div className="flex justify-between items-center flex-wrap gap-4 mt-8">
                 <p className="text-sm text-gray-600 max-w-xl">
                   {service.description}
@@ -83,7 +83,7 @@ const Services = () => {
               </div>
             </div>
 
-            {/* Right Side with ID */}
+            {/* Right Side */}
             <div className="md:w-1/3 text-right text-5xl md:text-9xl font-semibold text-customGold mt-6 md:mt-0 pl-6">
               {service.id}
             </div>

@@ -9,7 +9,7 @@ const Hero = () => {
   return (
     <section className="pt-28 pb-16 bg-heroBg text-center">
       <div className="max-w-4xl mx-auto px-4">
-        {/* Avatar group + text */}
+        {/* Avatars */}
         <div className="flex justify-center items-center space-x-4 mb-4">
           <div className="flex -space-x-2">
             {avatars.map((src, idx) => (
@@ -58,7 +58,7 @@ const Hero = () => {
         </a>
       </div>
 
-      {/*Hero Image with overlay */}
+      {/*Hero Image */}
       <div className="relative mt-10 mx-auto px-4 w-full max-w-6xl">
         <div className="relative w-full h-[240px] sm:h-[320px] md:h-[412px]">
           <img

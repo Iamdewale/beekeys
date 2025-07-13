@@ -33,7 +33,6 @@ const Listings = () => {
     return stars;
   };
 
-  // Optional: scroll left/right functions
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
   };
