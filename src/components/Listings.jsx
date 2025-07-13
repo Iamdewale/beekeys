@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
-import { motion } from "framer-motion";
 
 const Listings = () => {
   const [businesses, setBusinesses] = useState([]);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     fetch("/data.json")
@@ -33,35 +33,57 @@ const Listings = () => {
     return stars;
   };
 
+  // Optional: scroll left/right functions
+  const scrollLeft = () => {
+    scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+  };
+
   return (
     <section className="max-w-7xl mx-auto px-4 pb-10">
-      {/* Section Title */}
-      <h2 className="text-4xl font-bold mb-12">Popular Listings</h2>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-4xl font-bold">Popular Listings</h2>
+        <div className="hidden sm:flex gap-2">
+          <button
+            onClick={scrollLeft}
+            className="px-3 py-1 border rounded-full text-sm hover:bg-gray-100"
+          >
+            ←
+          </button>
+          <button
+            onClick={scrollRight}
+            className="px-3 py-1 border rounded-full text-sm hover:bg-gray-100"
+          >
+            →
+          </button>
+        </div>
+      </div>
 
-      {/* Grid of Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {businesses.map((biz, index) => (
-          <motion.div
+      {/* Carousel Scroll Wrapper */}
+      <div
+        ref={scrollRef}
+        className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory gap-6 pb-4"
+      >
+        {businesses.map((biz) => (
+          <div
             key={biz.id}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
+            className="min-w-[280px] sm:min-w-[320px] snap-start bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
           >
             <img
               src={biz.image}
               alt={biz.name}
               className="w-full h-48 object-cover"
             />
-            <div className="p-5 space-y-2">
+            <div className="p-4 space-y-2">
               <h3 className="text-lg font-semibold text-gray-800">
                 {biz.name}
               </h3>
               <p className="text-sm text-gray-500">{biz.category}</p>
               <p className="text-xs text-gray-400">{biz.location}</p>
 
-              {/* Star Rating */}
               <div className="flex items-center space-x-1 text-yellow-500 text-sm mt-2">
                 {renderStars(biz.rating)}
                 <span className="ml-2 text-gray-600 font-medium">
@@ -69,7 +91,7 @@ const Listings = () => {
                 </span>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
     </section>
