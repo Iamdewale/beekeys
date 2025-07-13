@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const Listings = () => {
   const [businesses, setBusinesses] = useState([]);
@@ -39,9 +40,13 @@ const Listings = () => {
 
       {/* Grid of Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {businesses.map((biz) => (
-          <div
+        {businesses.map((biz, index) => (
+          <motion.div
             key={biz.id}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ delay: index * 0.1, duration: 0.5 }}
             className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all"
           >
             <img
@@ -64,7 +69,7 @@ const Listings = () => {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

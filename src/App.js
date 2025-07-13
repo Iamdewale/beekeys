@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Features from "./components/Features";
@@ -10,7 +12,13 @@ import Footer from "./components/Footer";
 // import other components...
 
 function App() {
-  return (
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500); // Simulate load delay
+    return () => clearTimeout(timer);
+  }, []);
+  return loading ? <Loader /> : (
     <div>
       <Navbar />
       <Hero />
