@@ -122,4 +122,4 @@ Icons (e.g. Heroicons or FontAwesome - optional)
 
 
  🌐 Demo
-🔗 Live Preview — replace with your deployed site
+🔗 Live Preview — (https://beekeys-home.vercel.app/)
