@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 const Listings = () => {
@@ -6,10 +7,22 @@ const Listings = () => {
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    fetch("/data.json")
-      .then((res) => res.json())
-      .then((data) => setBusinesses(data))
-      .catch((err) => console.error("Failed to load listings", err));
+    axios
+      .get("https://fakestoreapi.com/products?limit=6") // This is to be replaces with the actual api
+      .then((response) => {
+        const data = response.data.map((item) => ({
+          id: item.id,
+          name: item.title,
+          category: item.category,
+          location: "Remote",
+          image: item.image,
+          rating: item.rating?.rate || 4.2,
+        }));
+        setBusinesses(data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch data", error);
+      });
   }, []);
 
   const renderStars = (rating) => {
@@ -61,7 +74,6 @@ const Listings = () => {
         </div>
       </div>
 
-      {/* Carousel Scroll Wrapper */}
       <div
         ref={scrollRef}
         className="flex overflow-x-auto scroll-smooth snap-x snap-mandatory gap-6 pb-4"
