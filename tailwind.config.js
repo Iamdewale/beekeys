@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}",],
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
       fontFamily: {
@@ -19,12 +19,18 @@ module.exports = {
       animation: {
         scroll: 'scroll 30s linear infinite',
         'spin-slow': 'spin 4s linear infinite',
+        fade: 'fade 2s ease-in-out infinite',
       },
-       colors: {
+      colors: {
         heroBg: "#F5FAFD",
-        customGold: '#F0C54E'
-       }
+        customGold: '#F0C54E',
+      },
     },
   },
-  plugins: [require("tailwind-scrollbar-hide")],
+  plugins: [
+    require("tailwind-scrollbar-hide"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/aspect-ratio"),
+    require("@tailwindcss/typography"),
+  ],
 }
