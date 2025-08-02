@@ -1,35 +1,23 @@
-import { useEffect, useState } from "react";
-import Loader from "./components/Loader";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Features from "./components/Features";
-import Logos from "./components/Logos";
-import Services from "./components/Services";
-import HowWeWork from "./components/HowWeWorks";
-import Listings from "./components/Listings";
-import Testimonials from "./components/Testimonies";
-import Footer from "./components/Footer";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+import Home from './pages/Home';
+import ExploreLocation from './pages/ExploreLocation';
+import About from './pages/About';
+import Vendor from './pages/Vendor';
+import Login from './pages/Login';
 
 function App() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1500); 
-    return () => clearTimeout(timer);
-  }, []);
-  return loading ? <Loader /> : (
-    <div>
-      <Navbar />
-      <Hero />
-      <Logos />
-      <Features />
-      <Services />
-      <HowWeWork />
-      <Listings />
-      <Testimonials /> 
-      <Footer />
-    </div>
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/explore" element={<ExploreLocation />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/vendor" element={<Vendor />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
   );
 }
 
