@@ -37,7 +37,7 @@ const Hero = () => {
           List, Search, or Share.
         </p>
         <a
-          href="#"
+          href="/explore"
           className="inline-flex items-center gap-2 bg-customGold text-white font-medium px-6 py-3 rounded-full hover:bg-yellow-500 transition group whitespace-nowrap"
         >
           Explore location

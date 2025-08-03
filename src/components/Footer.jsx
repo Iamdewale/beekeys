@@ -1,9 +1,10 @@
 import { FaFacebookF, FaInstagram, FaXTwitter } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
     <>
-      {/* CTA Section  */}
+      {/* CTA Section */}
       <div
         className="bg-cover bg-center bg-no-repeat rounded-t-3xl overflow-hidden"
         style={{
@@ -23,12 +24,15 @@ export default function Footer() {
               even countries.
             </p>
 
-            {/* Button */}
-            <button className="bg-yellow-400/50 border border-yellow-400 px-10 py-2 rounded-md hover:bg-yellow-400 transition group">
+            {/* Link instead of Button */}
+            <Link
+              to="/explore"
+              className="inline-block bg-yellow-400/50 border border-yellow-400 px-10 py-2 rounded-md hover:bg-yellow-400 transition group"
+            >
               <span className="text-yellow-400 group-hover:text-black font-medium">
                 Explore location
               </span>
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -40,7 +44,7 @@ export default function Footer() {
             {/* Brand Section */}
             <div>
               <img
-                src=".\assets\logos\beekey-ng.png"
+                src="./assets/logos/beekey-ng.png"
                 alt="Beekeys Logo"
                 className="h-10 mb-4"
               />
@@ -85,31 +89,11 @@ export default function Footer() {
             <div>
               <h3 className="text-lg font-bold mb-3">Quick Links</h3>
               <ul className="text-sm text-gray-400 space-y-1">
-                <li>
-                  <a href="#" className="hover:text-white">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    Features
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    Contact us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white">
-                    Privacy policy
-                  </a>
-                </li>
+                <li><a href="#" className="hover:text-white">About Us</a></li>
+                <li><a href="#" className="hover:text-white">Features</a></li>
+                <li><a href="#" className="hover:text-white">Contact us</a></li>
+                <li><a href="#" className="hover:text-white">Pricing</a></li>
+                <li><a href="#" className="hover:text-white">Privacy policy</a></li>
               </ul>
             </div>
           </div>
