@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
-import Navbar from "../components/Navbar";
+import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
 import nigeria from "../assets/images/HeroNig.jpg";
 
@@ -23,7 +23,7 @@ export default function ExpNig() {
 
   return (
     <main className="font-sans">
-      <Navbar />
+      <NavbarNG />
 
       {/* Hero Section */}
       <section className="relative w-full text-white bg-gray-900 min-h-[899px] md:min-h-[899px] sm:aspect-[16/9]">
