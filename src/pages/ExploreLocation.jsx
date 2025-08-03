@@ -12,8 +12,8 @@ export default function ExploreLocation() {
 
   const countries = [
     {
-      name: "Nigeria",
-      href: "/country/nigeria",
+      name: "",
+      href: "/nigeria",
       flag: nigeriaFlag,
     },
     {
