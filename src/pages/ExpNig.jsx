@@ -119,7 +119,7 @@ export default function ExpNig() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {(showAllStates || window.innerWidth >= 768
             ? states
-            : states.slice(0, 7)
+            : states.slice(0, 6)
           ).map((state, index) => (
             <Link
               key={index}
