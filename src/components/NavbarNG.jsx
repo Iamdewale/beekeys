@@ -62,9 +62,8 @@ const DesktopNav = () => (
     </div>
   </>
 );
-
 const MobileNav = ({ closeMenu }) => (
-  <div className="md:hidden px-4 pb-4 space-y-2 bg-white shadow transition-all duration-300 ease-in-out">
+  <div className="md:hidden px-4 pb-4 space-y-3 bg-white shadow transition-all duration-300 ease-in-out">
     <Link
       to="/features"
       onClick={closeMenu}
@@ -86,40 +85,50 @@ const MobileNav = ({ closeMenu }) => (
     >
       About
     </Link>
-    <Link
-      to="/explore"
-      onClick={closeMenu}
-      className="flex w-full items-center gap-2 bg-customGold text-white text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-500 transition"
-    >
-      Explore location
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-4 h-4"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
+    <div className="flex flex-col space-y-3 pt-2 items-start">
+      <Link
+        to="/login"
+        onClick={closeMenu}
+        className="flex items-center gap-2 border border-yellow-500 text-yellow-500 text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-500 hover:text-white transition max-w-fit"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M7 7h10v10" />
-      </svg>
-    </Link>
-    <Link
-      to="/login"
-      onClick={closeMenu}
-      className="flex w-full items-center gap-2 border border-yellow-500 text-yellow-500 text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-500 hover:text-white transition"
-    >
-      Login
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-4 h-4"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
+        Login
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M7 17L17 7M7 7h10v10"
+          />
+        </svg>
+      </Link>
+      <Link
+        to="/explore"
+        onClick={closeMenu}
+        className="flex items-center gap-2 bg-customGold text-white text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-500 transition max-w-fit"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M7 7h10v10" />
-      </svg>
-    </Link>
+        Explore location
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-4 h-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M7 17L17 7M7 7h10v10"
+          />
+        </svg>
+      </Link>
+    </div>
   </div>
 );
 
