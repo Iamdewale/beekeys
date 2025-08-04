@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
 
@@ -20,7 +20,7 @@ const LoginPage = () => {
             <h2 className="text-3xl font-semibold text-black">Welcome Back</h2>
             <p className="mt-2 text-sm text-gray-600">
               Don’t have an account yet?{" "}
-              <Link to="/signup" className="text-customGold font-medium">
+              <Link to="/signup" className="text-customGold font-semibold">
                 Sign up
               </Link>
             </p>
@@ -30,7 +30,7 @@ const LoginPage = () => {
           <form className="space-y-4">
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-800">
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-800">
                 Email Address
               </label>
               <input
@@ -45,7 +45,7 @@ const LoginPage = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-800">
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-800">
                 Password
               </label>
               <input
@@ -66,7 +66,7 @@ const LoginPage = () => {
             {/* Submit */}
             <button
               type="submit"
-              className="w-full bg-customGold hover:bg-yellow-500 transition text-white font-medium py-3 rounded-lg"
+              className="w-full bg-customGold hover:bg-yellow-500 transition text-white font-semibold py-3 rounded-lg"
             >
               Sign in
             </button>

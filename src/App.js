@@ -8,6 +8,7 @@ import ExpNig from './pages/ExpNig';
 import About from './pages/About';
 import Vendor from './pages/Vendor';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/vendor" element={<Vendor />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </Router>
   );
