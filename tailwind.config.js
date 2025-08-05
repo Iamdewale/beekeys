@@ -12,14 +12,19 @@ module.exports = {
           '100%': { transform: 'translateX(-50%)' },
         },
         fade: {
-          "0%, 100%": { opacity: "0.2" },
-          "50%": { opacity: "1" },
+          '0%, 100%': { opacity: '0.2' },
+          '50%': { opacity: '1' },
+        },
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
       },
       animation: {
         scroll: 'scroll 30s linear infinite',
         'spin-slow': 'spin 4s linear infinite',
         fade: 'fade 2s ease-in-out infinite',
+        fadeIn: 'fadeIn 0.25s ease-out forwards',
       },
       colors: {
         heroBg: "#F5FAFD",
@@ -33,4 +38,4 @@ module.exports = {
     require("@tailwindcss/aspect-ratio"),
     require("@tailwindcss/typography"),
   ],
-}
+};
