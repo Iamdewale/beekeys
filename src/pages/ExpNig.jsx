@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
 import nigeria from "../assets/images/HeroNig.jpg";
+import { fetchRegions } from "../services/api";
 
 export default function ExpNig() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAllStates, setShowAllStates] = useState(false);
+  const [states, setStates] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadRegions = async () => {
+      const regions = await fetchRegions();
+      const regionNames = regions.map((region) => region.name);
+      setStates(regionNames);
+    };
+
+    loadRegions();
+  }, []);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -16,10 +28,11 @@ export default function ExpNig() {
     }
   };
 
-  const states = [
-    "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa",
-    "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo",
-  ];
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <main className="font-sans">
@@ -50,14 +63,16 @@ export default function ExpNig() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Search business / services / product or try @Beekeys"
               className="flex-1 text-gray-800 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
               aria-label="Search input"
             />
 
+            {/* 🔥 Updated to show on all screens */}
             <button
               onClick={handleSearch}
-              className="hidden md:inline-flex items-center gap-2 bg-yellow-500 text-white text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-600 transition group whitespace-nowrap"
+              className="inline-flex items-center gap-2 bg-yellow-500 text-white text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-600 transition group whitespace-nowrap"
             >
               Search
               <svg
@@ -68,20 +83,26 @@ export default function ExpNig() {
                 stroke="currentColor"
                 strokeWidth={2}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M7 7h10v10" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7 17L17 7M7 7h10v10"
+                />
               </svg>
             </button>
           </div>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
-            {["Distance", "Open hours", "Accessibility", "Verification"].map((filter, idx) => (
-              <button
-                key={idx}
-                className="bg-white text-gray-700 px-4 py-1.5 rounded-full text-sm font-medium shadow-sm hover:bg-gray-100"
-              >
-                {filter} <span className="ml-1">▼</span>
-              </button>
-            ))}
+            {["Distance", "Open hours", "Accessibility", "Verification"].map(
+              (filter, idx) => (
+                <button
+                  key={idx}
+                  className="bg-white text-gray-700 px-4 py-1.5 rounded-full text-sm font-medium shadow-sm hover:bg-gray-100"
+                >
+                  {filter} <span className="ml-1">▼</span>
+                </button>
+              )
+            )}
           </div>
         </div>
       </section>
