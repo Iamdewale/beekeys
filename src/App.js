@@ -5,7 +5,7 @@ import ScrollToTop from "./components/ScrollToTop"
 import Home from './pages/Home';
 import ExploreLocation from './pages/ExploreLocation';
 import ExpNig from './pages/ExpNig';
-import StateDetails from ".pages/StateDetails";
+import StateDetails from "./pages/StateDetails";
 import SearchResults from './pages/SearchResults';
 import About from './pages/About';
 import Vendor from './pages/Vendor';
