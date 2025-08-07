@@ -5,6 +5,7 @@ import ScrollToTop from "./components/ScrollToTop"
 import Home from './pages/Home';
 import ExploreLocation from './pages/ExploreLocation';
 import ExpNig from './pages/ExpNig';
+import StateDetails from ".pages/StateDetails";
 import SearchResults from './pages/SearchResults';
 import About from './pages/About';
 import Vendor from './pages/Vendor';
@@ -25,6 +26,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/explore" element={<ExploreLocation />} />
         <Route path="/nigeria" element={<ExpNig />} />
+        <Route path="/state/:slug" element={<StateDetails />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/about" element={<About />} />
         <Route path="/vendor" element={<Vendor />} />
