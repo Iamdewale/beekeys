@@ -9,7 +9,7 @@ export const searchBusinesses = async (query) => {
 
 export async function fetchRegions() {
   try {
-    const response = await fetch("https://app.beekeys.com/nigeria/wp-json/geodir/v2/locations/regions/");
+    const response = await fetch("https://fresh-beekeys-proxy-api.vercel.app/api/region");
     if (!response.ok) {
       throw new Error("Failed to fetch regions");
     }
