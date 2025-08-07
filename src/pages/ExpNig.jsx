@@ -14,9 +14,15 @@ export default function ExpNig() {
 
   useEffect(() => {
     const loadRegions = async () => {
-      const regions = await fetchRegions();
-      const regionNames = regions.map((region) => region.name);
-      setStates(regionNames);
+      try {
+        const regions = await fetchRegions();
+        const regionNames = regions
+          .filter(region => region && typeof region.name === "string") // 🛡️ Defensive filtering
+          .map(region => region.name);
+        setStates(regionNames);
+      } catch (error) {
+        console.error("Failed to fetch regions:", error);
+      }
     };
 
     loadRegions();
@@ -39,7 +45,7 @@ export default function ExpNig() {
       <NavbarNG />
 
       {/* Hero Section */}
-      <section className="relative w-full text-white bg-gray-900 min-h-[899px] md:min-h-[899px] sm:aspect-[16/9]">
+      <section className="relative w-full text-white bg-gray-900 min-h-[899px]">
         <img
           src={nigeria}
           alt="Nigeria Map"
@@ -68,8 +74,6 @@ export default function ExpNig() {
               className="flex-1 text-gray-800 text-sm bg-transparent border-none focus:outline-none focus:ring-0"
               aria-label="Search input"
             />
-
-            {/* 🔥 Updated to show on all screens */}
             <button
               onClick={handleSearch}
               className="inline-flex items-center gap-2 bg-yellow-500 text-white text-sm font-medium py-3 px-6 rounded-full hover:bg-yellow-600 transition group whitespace-nowrap"
@@ -114,15 +118,17 @@ export default function ExpNig() {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {(showAllStates ? states : states.slice(0, 6)).map((state, index) => (
-            <Link
-              key={index}
-              to={`/state/${state.toLowerCase().replace(/\s+/g, "-")}`}
-              className="bg-gray-300 h-40 flex items-center justify-center text-gray-600 font-semibold hover:bg-yellow-400 transition"
-            >
-              {state} State
-            </Link>
-          ))}
+          {(showAllStates ? states : states.slice(0, 6))
+            .filter((state) => typeof state === "string") // 🛡️ Filter again just in case
+            .map((state, index) => (
+              <Link
+                key={index}
+                to={`/state/${state.toLowerCase().replace(/\s+/g, "-")}`}
+                className="bg-gray-300 h-40 flex items-center justify-center text-gray-600 font-semibold hover:bg-yellow-400 transition"
+              >
+                {state} State
+              </Link>
+            ))}
         </div>
 
         {!showAllStates && (
