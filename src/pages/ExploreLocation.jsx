@@ -38,12 +38,17 @@ export default function ExploreLocation() {
           Explore Our Active Locations. Watch the Progress
         </h2>
         <p className="text-sm text-gray-500 mt-2">
-          Click on the map and follow the links on the popup to go to the country portal
+          Click on the map and follow the links on the popup to go to the
+          country portal
         </p>
 
         {/* Desktop: Map with overlay buttons */}
         <div className="relative mt-6 mx-auto max-w-4xl w-full hidden md:block">
-          <img src={worldMap} alt="Map showing active locations" className="w-full" />
+          <img
+            src={worldMap}
+            alt="Map showing active locations"
+            className="w-full"
+          />
 
           {/* Overlay Buttons */}
           {countries.map((country, index) => (
@@ -58,8 +63,13 @@ export default function ExploreLocation() {
                   : "top-[52%] left-[42%]"
               } flex items-center gap-2 bg-primary text-white text-xs px-2 py-1 rounded-full hover:bg-primary-dark transition`}
             >
-              <img src={country.flag} alt={`${country.name} flag`} className="w-4 h-4 rounded-full" />
-              {country.name}
+              <img
+                src={country.flag}
+                alt={`${country.name} flag`}
+                className="w-4 h-4 rounded-full"
+              />
+              <span className="md:hidden">{country.name}</span>{" "}
+              {/* Name hidden on desktop */}
             </a>
           ))}
         </div>
