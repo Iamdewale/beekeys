@@ -8,11 +8,16 @@ export default function StateDetails() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!slug) {
+      setError("Invalid state identifier.");
+      setLoading(false);
+      return;
+    }
+
     const fetchStateData = async () => {
       try {
         const res = await fetch(`/api/state?slug=${slug}`);
 
-        // Validate HTTP status
         if (!res.ok) {
           throw new Error(`Failed to load state data (HTTP ${res.status})`);
         }
@@ -29,8 +34,9 @@ export default function StateDetails() {
         }
 
         setStateInfo(data);
+        setError("");
       } catch (err) {
-        console.error("Error loading state:", err.message);
+        console.error("Error loading state:", err);
         setError(err.message);
         setStateInfo(null);
       } finally {
