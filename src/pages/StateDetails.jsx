@@ -12,21 +12,26 @@ export default function StateDetails() {
       try {
         const res = await fetch(`/api/state?slug=${slug}`);
 
+        // Validate HTTP status
         if (!res.ok) {
-          throw new Error("Failed to load state data");
+          throw new Error(`Failed to load state data (HTTP ${res.status})`);
+        }
+
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Invalid content type from proxy");
         }
 
         const data = await res.json();
 
-        // Check if it's an error object instead of valid data
         if (data.error) {
-          throw new Error(data.error || "Invalid content type from proxy");
+          throw new Error(data.error || "Unknown error from API");
         }
 
         setStateInfo(data);
-      } catch (error) {
-        console.error("Error loading state:", error.message);
-        setError(error.message);
+      } catch (err) {
+        console.error("Error loading state:", err.message);
+        setError(err.message);
         setStateInfo(null);
       } finally {
         setLoading(false);
@@ -37,13 +42,13 @@ export default function StateDetails() {
   }, [slug]);
 
   if (loading) {
-    return <div className="p-8 text-center text-lg">Loading...</div>;
+    return <div className="p-8 text-center text-lg">Loading state data...</div>;
   }
 
   if (error) {
     return (
       <div className="p-8 text-center text-red-600">
-        ⚠️ Failed to load state data.
+        ⚠️ <strong>Failed to load state data.</strong>
         <br />
         <span className="text-sm">{error}</span>
       </div>
@@ -62,7 +67,7 @@ export default function StateDetails() {
       </p>
 
       <div className="bg-gray-100 p-4 rounded-md">
-        <pre className="text-sm overflow-x-auto">
+        <pre className="text-sm overflow-x-auto whitespace-pre-wrap">
           {JSON.stringify(stateInfo, null, 2)}
         </pre>
       </div>
