@@ -18,11 +18,13 @@ export default function StateDetails() {
       try {
         const res = await fetch(`/api/state?slug=${slug}`);
 
+        const contentType = res.headers.get("content-type");
+        console.log("🧪 Content-Type from proxy:", contentType);
+
         if (!res.ok) {
           throw new Error(`Failed to load state data (HTTP ${res.status})`);
         }
 
-        const contentType = res.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           throw new Error("Invalid content type from proxy");
         }
@@ -36,7 +38,7 @@ export default function StateDetails() {
         setStateInfo(data);
         setError("");
       } catch (err) {
-        console.error("Error loading state:", err);
+        console.error("Error loading state:", err.message);
         setError(err.message);
         setStateInfo(null);
       } finally {
