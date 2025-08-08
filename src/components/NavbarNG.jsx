@@ -5,13 +5,10 @@ import logoNg from "../assets/images/beekeys-ng.png";
 const DesktopNav = () => (
   <>
     <nav className="space-x-6 hidden md:flex">
-      <Link to="/features" className="text-gray-700 hover:text-black">
+      <Link to="/features" className="text-gray-700 font-semibold hover:text-black">
         Features
       </Link>
-      <Link to="/pricing" className="text-gray-700 hover:text-black">
-        Pricing
-      </Link>
-      <Link to="/about" className="text-gray-700 hover:text-black">
+      <Link to="/about" className="text-gray-700 font-semibold hover:text-black">
         About
       </Link>
     </nav>
@@ -63,20 +60,13 @@ const DesktopNav = () => (
   </>
 );
 const MobileNav = ({ closeMenu }) => (
-  <div className="md:hidden px-4 pb-4 space-y-3 bg-white shadow transition-all duration-300 ease-in-out">
+  <div className="md:hidden font-semibold px-4 pb-4 space-y-3 bg-white shadow transition-all duration-300 ease-in-out">
     <Link
       to="/features"
       onClick={closeMenu}
       className="block text-gray-700 hover:text-black"
     >
       Features
-    </Link>
-    <Link
-      to="/pricing"
-      onClick={closeMenu}
-      className="block text-gray-700 hover:text-black"
-    >
-      Pricing
     </Link>
     <Link
       to="/about"

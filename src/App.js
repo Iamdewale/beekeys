@@ -16,6 +16,10 @@ import BusinessListingStepOne from './pages/BusinessListingStepOne';
 import BusinessListingStepTwo from './pages/BusinessListingStepTwo';
 import BusinessListingStepThree  from './pages/BusinessListingStepThree';
 import BusinessListingStepFour  from './pages/BusinessListingStepFour';
+import ContributorsFormStepOne  from './pages/ContributorsFormStepOne';
+import ContributorsFormStepTwo  from './pages/ContributorsFormStepTwo';
+import ContributorsFormStepThree  from './pages/ContributorsFormStepThree';
+import ContributorsFormStepFour  from './pages/ContributorsFormStepFour';
 
 
 function App() {
@@ -37,6 +41,10 @@ function App() {
         <Route path="/listing-step-2" element={<BusinessListingStepTwo />} />
         <Route path="/listing-step-3" element={<BusinessListingStepThree />} />
         <Route path="/listing-step-4" element={<BusinessListingStepFour />} />
+        <Route path="/contributor-step-1" element={<ContributorsFormStepOne />} />
+        <Route path="/contributor-step-2" element={<ContributorsFormStepTwo />} />
+        <Route path="/contributor-step-3" element={<ContributorsFormStepThree />} />
+        <Route path="/contributor-step-4" element={<ContributorsFormStepFour />} />
       </Routes>
     </Router>
   );

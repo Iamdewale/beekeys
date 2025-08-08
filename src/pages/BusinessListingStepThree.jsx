@@ -21,7 +21,7 @@ const BusinessListingStepThree = () => {
     <main className="font-sans bg-white min-h-screen flex flex-col">
       <NavbarNG />
 
-      <div className="flex-grow pt-24 pb-24 px-4 max-w-3xl mx-auto">
+      <div className="flex-grow pt-32 pb-24 px-4 max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-2xl font-semibold">Beekeys Listing Form</h1>
