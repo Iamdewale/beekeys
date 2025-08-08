@@ -5,22 +5,31 @@ export default function StateDetails() {
   const { slug } = useParams();
   const [stateInfo, setStateInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const fetchStateData = async () => {
+      setLoading(true);
+      setErrorMsg("");
+
       try {
-        const res = await fetch(
-          `https://app.beekeys.com/nigeria/wp-json/geodir/v2/locations/regions/${slug}?country=nigeria`
-        );
+        const res = await fetch(`/api/state?slug=${slug}`);
 
         if (!res.ok) {
-          throw new Error("Failed to load state data");
+          const errData = await res.json();
+          throw new Error(errData?.error || "API error");
+        }
+
+        const contentType = res.headers.get("content-type");
+        if (!contentType.includes("application/json")) {
+          throw new Error("Invalid content type from proxy");
         }
 
         const data = await res.json();
         setStateInfo(data);
       } catch (error) {
         console.error("Error loading state:", error.message);
+        setErrorMsg(error.message);
         setStateInfo(null);
       } finally {
         setLoading(false);
@@ -31,11 +40,16 @@ export default function StateDetails() {
   }, [slug]);
 
   if (loading) {
-    return <div className="p-8 text-center text-lg">Loading...</div>;
+    return <div className="p-8 text-center text-lg">Loading state data...</div>;
   }
 
-  if (!stateInfo) {
-    return <div className="p-8 text-center text-red-600">State not found</div>;
+  if (errorMsg || !stateInfo) {
+    return (
+      <div className="p-8 text-center text-red-600">
+        ⚠️ Failed to load state data.<br />
+        <span className="text-sm">{errorMsg}</span>
+      </div>
+    );
   }
 
   return (
@@ -45,9 +59,10 @@ export default function StateDetails() {
         Country: {stateInfo.country_title || "Nigeria"}
       </p>
 
-      {/* Display more details if needed */}
       <div className="bg-gray-100 p-4 rounded-md">
-        <pre className="text-sm overflow-x-auto">{JSON.stringify(stateInfo, null, 2)}</pre>
+        <pre className="text-sm overflow-x-auto">
+          {JSON.stringify(stateInfo, null, 2)}
+        </pre>
       </div>
     </div>
   );
