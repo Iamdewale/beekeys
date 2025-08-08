@@ -5,31 +5,28 @@ export default function StateDetails() {
   const { slug } = useParams();
   const [stateInfo, setStateInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchStateData = async () => {
-      setLoading(true);
-      setErrorMsg("");
-
       try {
         const res = await fetch(`/api/state?slug=${slug}`);
 
         if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData?.error || "API error");
-        }
-
-        const contentType = res.headers.get("content-type");
-        if (!contentType.includes("application/json")) {
-          throw new Error("Invalid content type from proxy");
+          throw new Error("Failed to load state data");
         }
 
         const data = await res.json();
+
+        // Check if it's an error object instead of valid data
+        if (data.error) {
+          throw new Error(data.error || "Invalid content type from proxy");
+        }
+
         setStateInfo(data);
       } catch (error) {
         console.error("Error loading state:", error.message);
-        setErrorMsg(error.message);
+        setError(error.message);
         setStateInfo(null);
       } finally {
         setLoading(false);
@@ -40,16 +37,21 @@ export default function StateDetails() {
   }, [slug]);
 
   if (loading) {
-    return <div className="p-8 text-center text-lg">Loading state data...</div>;
+    return <div className="p-8 text-center text-lg">Loading...</div>;
   }
 
-  if (errorMsg || !stateInfo) {
+  if (error) {
     return (
       <div className="p-8 text-center text-red-600">
-        ⚠️ Failed to load state data.<br />
-        <span className="text-sm">{errorMsg}</span>
+        ⚠️ Failed to load state data.
+        <br />
+        <span className="text-sm">{error}</span>
       </div>
     );
+  }
+
+  if (!stateInfo) {
+    return <div className="p-8 text-center text-red-600">State not found</div>;
   }
 
   return (
