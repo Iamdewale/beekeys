@@ -7,6 +7,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const LoginPage = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            username: email, // WordPress JWT expects "username"
+            username: email,
             password: password,
           }),
         }
@@ -34,18 +35,17 @@ const LoginPage = () => {
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.message || "Login failed");
+        setShowModal(true); // Show modal on error
         setLoading(false);
         return;
       }
 
       const data = await response.json();
-      // Save token to localStorage (or context/state)
       localStorage.setItem("token", data.token);
-
-      // Redirect to home or dashboard page
       navigate("/select-role");
     } catch (err) {
       setError("An error occurred during login");
+      setShowModal(true);
       setLoading(false);
     }
   };
@@ -53,6 +53,28 @@ const LoginPage = () => {
   return (
     <main className="font-sans bg-white min-h-screen flex flex-col">
       <NavbarNG />
+
+      {/* ❗ Error Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full relative">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+            >
+              ×
+            </button>
+            <h2 className="text-xl font-semibold text-red-600 mb-2">Login Failed</h2>
+            <p className="text-gray-700">{error || "Invalid credentials"}</p>
+            <button
+              onClick={() => setShowModal(false)}
+              className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="flex-grow pt-32 pb-24 flex items-center justify-center px-4">
         <div className="w-full max-w-md space-y-6">
@@ -110,8 +132,6 @@ const LoginPage = () => {
                 </Link>
               </div>
             </div>
-
-            {error && <p className="text-red-500">{error}</p>}
 
             <button
               type="submit"
