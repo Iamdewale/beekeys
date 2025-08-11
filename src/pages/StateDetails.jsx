@@ -1,84 +1,68 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom"; // <-- added useNavigate here
+import NavbarNG from "../components/NavbarNG";
+import Footer from "../components/Footer";
+import { fetchMarkersByState } from "../services/api"; 
 
 export default function StateDetails() {
   const { slug } = useParams();
-  const [stateInfo, setStateInfo] = useState(null);
+  const navigate = useNavigate();  // <-- moved here for clarity
+
   const [loading, setLoading] = useState(true);
+  const [markers, setMarkers] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!slug) {
-      setError("Invalid state identifier.");
-      setLoading(false);
-      return;
-    }
-
-    const fetchStateData = async () => {
+    const loadMarkers = async () => {
       try {
-        const res = await fetch(`/api/state?slug=${slug}`);
-
-        const contentType = res.headers.get("content-type");
-        console.log("🧪 Content-Type from proxy:", contentType);
-
-        if (!res.ok) {
-          throw new Error(`Failed to load state data (HTTP ${res.status})`);
-        }
-
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Invalid content type from proxy");
-        }
-
-        const data = await res.json();
-
-        if (data.error) {
-          throw new Error(data.error || "Unknown error from API");
-        }
-
-        setStateInfo(data);
-        setError("");
+        const data = await fetchMarkersByState(slug);
+        setMarkers(data);
       } catch (err) {
-        console.error("Error loading state:", err.message);
-        setError(err.message);
-        setStateInfo(null);
+        console.error(err);
+        setError("Failed to load data for this state.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStateData();
+    loadMarkers();
   }, [slug]);
 
-  if (loading) {
-    return <div className="p-8 text-center text-lg">Loading state data...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="p-8 text-center text-red-600">
-        ⚠️ <strong>Failed to load state data.</strong>
-        <br />
-        <span className="text-sm">{error}</span>
-      </div>
-    );
-  }
-
-  if (!stateInfo) {
-    return <div className="p-8 text-center text-red-600">State not found</div>;
-  }
-
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">{stateInfo.title}</h1>
-      <p className="text-gray-600 mb-6">
-        Country: {stateInfo.country_title || "Nigeria"}
-      </p>
+    <main className="font-sans">
+      <NavbarNG />
+      <section className="px-6 pt-32 py-16 max-w-6xl mx-auto">
+        <button
+          onClick={() => navigate("/nigeria")}
+          className="mb-4 text-yellow-600 hover:underline"
+        >
+          ← Back to States
+        </button>
 
-      <div className="bg-gray-100 p-4 rounded-md">
-        <pre className="text-sm overflow-x-auto whitespace-pre-wrap">
-          {JSON.stringify(stateInfo, null, 2)}
-        </pre>
-      </div>
-    </div>
+        <h1 className="text-3xl font-bold mb-4 capitalize">
+          Explore Services in {slug.replace(/-/g, " ")}
+        </h1>
+
+        {loading && <p className="text-gray-600">Loading services...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+          {markers.map((item) => (
+            <div key={item.id} className="bg-white rounded shadow p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">{item.title}</h3>
+              <p className="text-sm text-gray-500">Lat: {item.lat}, Lng: {item.lng}</p>
+              {item.icon && (
+                <img
+                  src={item.icon}
+                  alt={item.title}
+                  className="w-10 h-10 mt-2"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+      <Footer />
+    </main>
   );
 }

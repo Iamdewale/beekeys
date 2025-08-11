@@ -11,6 +11,7 @@ import About from './pages/About';
 import Vendor from './pages/Vendor';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import ForgotPassword from './pages/ForgotPassword';
 import RoleSelector from './pages/RoleSelector';
 import BusinessListingStepOne from './pages/BusinessListingStepOne';
 import BusinessListingStepTwo from './pages/BusinessListingStepTwo';
@@ -36,6 +37,7 @@ function App() {
         <Route path="/vendor" element={<Vendor />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/select-role" element={<RoleSelector />} />
         <Route path="/listing-step-1" element={<BusinessListingStepOne />} />
         <Route path="/listing-step-2" element={<BusinessListingStepTwo />} />

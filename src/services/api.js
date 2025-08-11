@@ -9,7 +9,7 @@ export const searchBusinesses = async (query) => {
 
 export const fetchRegions = async () => {
   try {
-    const response = await fetch("https://fresh-beekeys-proxy-api.vercel.app/api/region");
+    const response = await fetch("https://beekeys-proxy.onrender.com/api/regions");
 
     if (!response.ok) {
       throw new Error(`Failed to fetch regions. Status: ${response.status}`);
@@ -17,15 +17,25 @@ export const fetchRegions = async () => {
 
     const json = await response.json();
 
-    // Validate and return data
     if (json && Array.isArray(json.data)) {
       return json.data;
     }
 
-    console.error("Unexpected API format:", json);
     return [];
   } catch (error) {
-    console.error("Error fetching regions:", error);
+    console.error("Error fetching regions:", error.message);
     return [];
   }
 };
+
+export async function fetchMarkersByState(stateSlug) {
+  const response = await fetch(`hhttps://beekeys-proxy.onrender.com/api/markers/${stateSlug}`);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to fetch data");
+  }
+
+  return data.items || [];
+}
+
