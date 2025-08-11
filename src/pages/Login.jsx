@@ -35,7 +35,7 @@ const LoginPage = () => {
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.message || "Login failed");
-        setShowModal(true); // Show modal on error
+        setShowModal(true);
         setLoading(false);
         return;
       }
@@ -65,7 +65,10 @@ const LoginPage = () => {
               ×
             </button>
             <h2 className="text-xl font-semibold text-red-600 mb-2">Login Failed</h2>
-            <p className="text-gray-700">{error || "Invalid credentials"}</p>
+            <div
+              className="text-gray-700"
+              dangerouslySetInnerHTML={{ __html: error || "Invalid credentials" }}
+            />
             <button
               onClick={() => setShowModal(false)}
               className="mt-4 w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md transition"
