@@ -50,34 +50,42 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://app.beekeys.com/wp-json/userswp/v1/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-          phone,
-        }),
-      });
+      const response = await fetch(
+        "https://app.beekeys.com/wp-json/userswp/v1/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            phone,
+          }),
+        }
+      );
 
       const data = await response.json();
+      console.log("Signup response:", data); // 🔍 Log the response for debugging
 
-      if (!response.ok) {
-        return setError(data.message || "Registration failed. Please try again.");
+      if (!response.ok || !data.success) {
+        return setError(
+          data.message || "Registration failed. Please try again."
+        );
       }
 
-      if (data.token) {
-        localStorage.setItem("token", data.token); // ✅ Store JWT
+      // ✅ Check token in data.data.token
+      const token = data?.data?.token;
+      if (token) {
+        localStorage.setItem("token", token);
         setSuccessMsg("Registration successful! Logging you in...");
 
         setTimeout(() => {
-          navigate("/dashboard"); // Change to your dashboard or homepage
+          navigate("/dashboard"); // redirect to your main page
         }, 1500);
       } else {
-        setError("Registered, but could not auto-login.");
+        setError(data.message || "Registered, but could not auto-login.");
       }
     } catch (err) {
       console.error(err);
@@ -111,7 +119,10 @@ const SignUp = () => {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-800">
+              <label
+                htmlFor="email"
+                className="block text-sm font-semibold text-gray-800"
+              >
                 Email Address
               </label>
               <input
@@ -128,7 +139,10 @@ const SignUp = () => {
 
             {/* Phone */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-semibold text-gray-800">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-semibold text-gray-800"
+              >
                 Phone Number
               </label>
               <input
@@ -145,7 +159,10 @@ const SignUp = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-800">
+              <label
+                htmlFor="password"
+                className="block text-sm font-semibold text-gray-800"
+              >
                 Password
               </label>
               <input
@@ -162,7 +179,10 @@ const SignUp = () => {
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-800">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-semibold text-gray-800"
+              >
                 Confirm Password
               </label>
               <input

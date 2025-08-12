@@ -14,7 +14,7 @@ const ForgotPassword = () => {
     setStatus("");
     setMessage("");
 
-    if (!email) {
+    if (!email.trim()) {
       setStatus("error");
       setMessage("Please enter your email address.");
       return;
@@ -36,6 +36,7 @@ const ForgotPassword = () => {
       if (!response.ok) {
         setStatus("error");
         setMessage(data.message || "Password reset failed.");
+        setEmail("");
       } else {
         setStatus("success");
         setMessage("Check your email for password reset instructions.");
