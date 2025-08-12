@@ -15,17 +15,43 @@ const ContributorFormStepFour = () => {
   const handleBack = () => {
     navigate("/contributor-step-3");
   };
+const handleSubmit = async () => {
+  if (!paymentMethod || !accountName || !accountNumber) {
+    alert("Please fill in all required payment fields.");
+    return;
+  }
 
-  const handleSubmit = () => {
-    if (!paymentMethod || !accountName || !accountNumber) {
-      alert("Please fill in all required payment fields.");
+  try {
+    const response = await fetch(`${window.wpApiSettings.root}beekeys/v1/contributor`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-WP-Nonce': window.wpApiSettings.nonce,
+      },
+      body: JSON.stringify({
+        paymentMethod,
+        accountName,
+        accountNumber,
+        bankName,
+        notes,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || 'Error submitting form.');
       return;
     }
 
-    // Handle submission logic here (API call etc.)
-    alert("Application submitted successfully!");
-    navigate("/thank-you"); // or home page
-  };
+    alert('Form submitted successfully!');
+    navigate('/thank-you');
+
+  } catch (err) {
+    console.error(err);
+    alert('An error occurred. Please try again.');
+  }
+};
 
   return (
     <main className="bg-white font-sans min-h-screen flex flex-col">
