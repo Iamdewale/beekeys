@@ -35,13 +35,15 @@ const LoginPage = () => {
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.message || "Login failed");
+        
         setShowModal(true);
         setLoading(false);
         return;
       }
 
       const data = await response.json();
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("beekeys_token", data.token);
+      window.dispatchEvent(new Event("beekeys-login-status"));
       navigate("/select-role");
     } catch (err) {
       setError("An error occurred during login");
