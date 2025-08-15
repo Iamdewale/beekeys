@@ -1,21 +1,23 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
+import { useFormData } from "../contexts/FormDataContext";
 
 const BusinessListingStepTwo = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [website, setWebsite] = useState("");
-  const [address, setAddress] = useState("");
+  const { formData, setFormData } = useFormData();
 
   const handleBack = () => {
     navigate("/listing-step-1"); // or use navigate(-1) to go back one step
   };
 
   const handleNext = () => {
-    // Validate inputs if needed
+    // Basic validation
+    if (!formData.email.trim() || !formData.phone.trim() || !formData.address.trim()) {
+      alert("Email, phone, and address are required.");
+      return;
+    }
     navigate("/listing-step-3");
   };
 
@@ -68,8 +70,8 @@ const BusinessListingStepTwo = () => {
             </label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
               placeholder="Enter business email"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               required
@@ -83,8 +85,8 @@ const BusinessListingStepTwo = () => {
             </label>
             <input
               type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              value={formData.phone}
+              onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
               placeholder="Enter business phone number"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               required
@@ -98,8 +100,8 @@ const BusinessListingStepTwo = () => {
             </label>
             <input
               type="url"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
+              value={formData.website}
+              onChange={(e) => setFormData((prev) => ({ ...prev, website: e.target.value }))}
               placeholder="https://yourbusiness.com"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
@@ -112,15 +114,15 @@ const BusinessListingStepTwo = () => {
             </label>
             <textarea
               rows={3}
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              value={formData.address}
+              onChange={(e) => setFormData((prev) => ({ ...prev, address: e.target.value }))}
               placeholder="Enter full address of your business location"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               required
             />
           </div>
 
-          {/* Next Button */}
+          {/* Navigation Buttons */}
           <div className="pt-4 flex gap-4">
             <button
               type="button"

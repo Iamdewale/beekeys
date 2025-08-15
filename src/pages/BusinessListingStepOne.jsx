@@ -1,23 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
 import { FiUploadCloud } from "react-icons/fi";
+import { useFormData } from "../contexts/FormDataContext";
 
 const BusinessListingStepOne = () => {
   const navigate = useNavigate();
-  const [businessName, setBusinessName] = useState("");
-  const [isCACRegistered, setIsCACRegistered] = useState(false);
-  const [slogan, setSlogan] = useState("");
-  const [hasBranches, setHasBranches] = useState(false);
-  const [images, setImages] = useState([]);
+  const { formData, setFormData } = useFormData();
+  const [localImages, setLocalImages] = useState([]); // Local state for images
 
   const handleFileChange = (e) => {
-    setImages([...e.target.files]);
+    setLocalImages([...e.target.files]);
+    setFormData((prev) => ({ ...prev, images: [...e.target.files] }));
   };
 
   const handleNext = () => {
-    // Handle form validation or move to next step
+    // Basic validation
+    if (!formData.businessName.trim()) {
+      alert("Business name is required.");
+      return;
+    }
     navigate("/listing-step-2");
   };
 
@@ -30,7 +33,8 @@ const BusinessListingStepOne = () => {
         <div className="text-center mb-10">
           <h1 className="text-2xl font-semibold">Beekeys Listing Form</h1>
           <p className="text-sm text-gray-600 mt-1">
-            Fields marked with an <span className="text-red-500">*</span> are required
+            Fields marked with an <span className="text-red-500">*</span> are
+            required
           </p>
         </div>
 
@@ -66,16 +70,16 @@ const BusinessListingStepOne = () => {
             </label>
             <input
               type="text"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
+              value={formData.businessName}
+              onChange={(e) => setFormData((prev) => ({ ...prev, businessName: e.target.value }))}
               placeholder="Enter brand name or business name"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
             <label className="mt-2 flex items-center space-x-2 text-sm text-gray-600">
               <input
                 type="checkbox"
-                checked={isCACRegistered}
-                onChange={(e) => setIsCACRegistered(e.target.checked)}
+                checked={formData.isCACRegistered}
+                onChange={(e) => setFormData((prev) => ({ ...prev, isCACRegistered: e.target.checked }))}
               />
               <span>Check if CAC Registered</span>
             </label>
@@ -88,16 +92,16 @@ const BusinessListingStepOne = () => {
             </label>
             <input
               type="text"
-              value={slogan}
-              onChange={(e) => setSlogan(e.target.value)}
+              value={formData.slogan}
+              onChange={(e) => setFormData((prev) => ({ ...prev, slogan: e.target.value }))}
               placeholder="Enter your preferred motto"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
             <label className="mt-2 flex items-center space-x-2 text-sm text-gray-600">
               <input
                 type="checkbox"
-                checked={hasBranches}
-                onChange={(e) => setHasBranches(e.target.checked)}
+                checked={formData.hasBranches}
+                onChange={(e) => setFormData((prev) => ({ ...prev, hasBranches: e.target.checked }))}
               />
               <span>Yes we have branch locations</span>
             </label>
@@ -125,6 +129,11 @@ const BusinessListingStepOne = () => {
                 onChange={handleFileChange}
               />
             </label>
+            {localImages.length > 0 && (
+              <p className="mt-2 text-sm text-gray-600">
+                Selected files: {localImages.length}
+              </p>
+            )}
           </div>
 
           {/* Next Button */}

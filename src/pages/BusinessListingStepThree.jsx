@@ -1,15 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
+import { useFormData } from "../contexts/FormDataContext";
 
 const BusinessListingStepThree = () => {
   const navigate = useNavigate();
-  const [tags, setTags] = useState("");
-  const [description, setDescription] = useState("");
+  const { formData, setFormData } = useFormData();
 
   const handleNext = () => {
-    // Validate if needed
+    // Basic validation
+    if (!formData.tags.trim()) {
+      alert("Tags are required.");
+      return;
+    }
     navigate("/listing-step-4");
   };
 
@@ -26,7 +30,8 @@ const BusinessListingStepThree = () => {
         <div className="text-center mb-10">
           <h1 className="text-2xl font-semibold">Beekeys Listing Form</h1>
           <p className="text-sm text-gray-600 mt-1">
-            Fields marked with an <span className="text-red-500">*</span> are required
+            Fields marked with an <span className="text-red-500">*</span> are
+            required
           </p>
         </div>
 
@@ -62,8 +67,8 @@ const BusinessListingStepThree = () => {
             </label>
             <input
               type="text"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
+              value={formData.tags}
+              onChange={(e) => setFormData((prev) => ({ ...prev, tags: e.target.value }))}
               placeholder="e.g. photography, catering, logistics"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
               required
@@ -77,8 +82,8 @@ const BusinessListingStepThree = () => {
             </label>
             <textarea
               rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formData.description}
+              onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="Tell us briefly what your business offers"
               className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
@@ -86,21 +91,21 @@ const BusinessListingStepThree = () => {
 
           {/* Navigation Buttons */}
           <div className="pt-4 flex gap-4">
-  <button
-    type="button"
-    onClick={handleBack}
-    className="w-1/2 bg-gray-200 text-gray-800 font-medium py-3 rounded-full hover:bg-gray-300 transition"
-  >
-    Back
-  </button>
-  <button
-    type="button"
-    onClick={handleNext}
-    className="w-1/2 bg-yellow-500 text-white font-medium py-3 rounded-full hover:bg-yellow-600 transition"
-  >
-    Next
-  </button>
-</div>
+            <button
+              type="button"
+              onClick={handleBack}
+              className="w-1/2 bg-gray-200 text-gray-800 font-medium py-3 rounded-full hover:bg-gray-300 transition"
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={handleNext}
+              className="w-1/2 bg-yellow-500 text-white font-medium py-3 rounded-full hover:bg-yellow-600 transition"
+            >
+              Next
+            </button>
+          </div>
         </form>
       </div>
 
