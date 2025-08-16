@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
@@ -16,95 +16,81 @@ const BusinessListingStepFour = () => {
     navigate(-1);
   };
 
-const handleSubmit = async () => {
-  setIsLoading(true);
-  const apiUrl = "https://beekeys-proxy.onrender.com/submit";
-  const username = process.env.REACT_APP_WP_USERNAME;
-  const password = process.env.REACT_APP_WP_PASSWORD;
+  const handleSubmit = async () => {
+    setIsLoading(true);
 
-  console.log("Submitting to:", apiUrl);
+    try {
+      // 🔹 Step 1: Upload images (if any)
+      const mediaIds = [];
+      if (formData.images.length > 0) {
+        for (const file of formData.images) {
+          const formDataMedia = new FormData();
+          formDataMedia.append("file", file);
 
-  if (!username || !password) {
-    setErrorMessage("Authentication credentials are missing. Check .env file.");
-    setShowErrorModal(true);
-    setIsLoading(false);
-    return;
-  }
+          const mediaResponse = await fetch(
+            "https://beekeys-proxy.onrender.com/upload-media",
+            {
+              method: "POST",
+              body: formDataMedia,
+            }
+          );
 
-  const auth = btoa(`${username}:${password.replace(/\s/g, "")}`);
-  console.log("Encoded Auth:", auth);
+          const mediaResult = await mediaResponse.json();
+          console.log("Media Upload Result:", mediaResult);
 
-  const mediaIds = [];
-  if (formData.images.length > 0) {
-    for (const file of formData.images) {
-      const formDataMedia = new FormData();
-      formDataMedia.append("file", file);
+          if (!mediaResponse.ok || !mediaResult.success) {
+            throw new Error(
+              mediaResult.error?.message || "Media upload failed"
+            );
+          }
 
-      const mediaResponse = await fetch("https://beekeys-proxy.onrender.com/upload-media", {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${auth}`,
-        },
-        body: formDataMedia,
-      });
-
-      if (!mediaResponse.ok) {
-        throw new Error(`Media upload failed: ${await mediaResponse.text()}`);
+          mediaIds.push(mediaResult.data.id);
+        }
       }
 
-      const mediaResult = await mediaResponse.json();
-      console.log("Media Upload Result:", mediaResult);
-      mediaIds.push(mediaResult.media?.id || mediaResult.id);
-    }
-  }
+      // 🔹 Step 2: Prepare post data
+      const postData = {
+        title: formData.businessName || "Untitled Business",
+        content: formData.description || "No description provided.",
+        status: "publish",
+        meta: {
+          phone: formData.phone || "",
+          email: formData.email || "",
+          tags: formData.tags || "",
+          isCACRegistered: formData.isCACRegistered || false,
+          slogan: formData.slogan === "null" ? null : formData.slogan || "",
+          hasBranches: formData.hasBranches || false,
+          website: formData.website || "",
+          address: formData.address || "",
+          mediaIds,
+        },
+      };
 
-  const postData = {
-    title: formData.businessName || "Untitled Business",
-    content: formData.description || "No description provided.",
-    status: "publish",
-    meta: {
-      phone: formData.phone || "",
-      email: formData.email || "",
-      tags: formData.tags || "",
-      isCACRegistered: formData.isCACRegistered || false,
-      slogan: formData.slogan === "null" ? null : formData.slogan || "",
-      hasBranches: formData.hasBranches || false,
-      website: formData.website || "",
-      address: formData.address || "",
-      mediaIds: mediaIds,
-    },
+      console.log("Post Data:", postData);
+
+      // 🔹 Step 3: Send post data to proxy
+      const response = await fetch("https://beekeys-proxy.onrender.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postData),
+      });
+
+      const result = await response.json();
+      console.log("Submit Result:", result);
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error?.message || "Submission failed");
+      }
+
+      setShowModal(true);
+    } catch (error) {
+      console.error("Submission Error:", error);
+      setErrorMessage(error.message);
+      setShowErrorModal(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  console.log("Post Data:", postData);
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${auth}`,
-      },
-      body: JSON.stringify(postData),
-    });
-
-    const rawResponse = await response.text();
-    console.log("Raw Response:", rawResponse);
-    const result = response.ok ? JSON.parse(rawResponse) : { error: rawResponse };
-    console.log("Parsed Result:", result);
-
-    if (!response.ok || !result.success || !result.beekeysResponse) {
-      throw new Error(result.error || result.details || "Unexpected response from Beekeys");
-    }
-
-    setShowModal(true);
-  } catch (error) {
-    console.error("Submission Error:", error);
-    setErrorMessage(error.message);
-    setShowErrorModal(true);
-  } finally {
-    setIsLoading(false);
-  }
-};
 
   const handleCloseModal = () => {
     setShowModal(false);
