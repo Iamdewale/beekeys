@@ -87,13 +87,13 @@ const handleSubmit = async () => {
       body: JSON.stringify(postData),
     });
 
-    const rawResponse = await response.text(); // Log raw response
+    const rawResponse = await response.text();
     console.log("Raw Response:", rawResponse);
     const result = response.ok ? JSON.parse(rawResponse) : { error: rawResponse };
     console.log("Parsed Result:", result);
 
     if (!response.ok || !result.success || !result.beekeysResponse) {
-      throw new Error(result.error || "Unexpected response from Beekeys");
+      throw new Error(result.error || result.details || "Unexpected response from Beekeys");
     }
 
     setShowModal(true);
