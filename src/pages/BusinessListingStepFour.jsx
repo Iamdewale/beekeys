@@ -16,95 +16,100 @@ const BusinessListingStepFour = () => {
     navigate(-1);
   };
 
-const handleSubmit = async () => {
-  setIsLoading(true);
-  const apiUrl = "https://beekeys-proxy.onrender.com/submit";
-  const username = process.env.REACT_APP_WP_USERNAME;
-  const password = process.env.REACT_APP_WP_PASSWORD;
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    const apiUrl = "https://beekeys-proxy.onrender.com/submit";
+    const username = process.env.REACT_APP_WP_USERNAME;
+    const password = process.env.REACT_APP_WP_PASSWORD;
 
-  console.log("Submitting to:", apiUrl);
-  console.log("Credentials:", { username, password }); // Mask in production
+    console.log("Submitting to:", apiUrl);
 
-  if (!username || !password) {
-    setErrorMessage("Authentication credentials are missing. Check .env file.");
-    setShowErrorModal(true);
-    setIsLoading(false);
-    return;
-  }
+    if (!username || !password) {
+      setErrorMessage("Authentication credentials are missing. Check .env file.");
+      setShowErrorModal(true);
+      setIsLoading(false);
+      return;
+    }
 
-  const auth = btoa(`${username}:${password.replace(/\s/g, "")}`);
-  console.log("Encoded Auth:", auth);
+    const auth = btoa(`${username}:${password.replace(/\s/g, "")}`);
+    console.log("Encoded Auth:", auth);
 
-  // Upload images first via /upload-media
-  const mediaIds = [];
-  if (formData.images.length > 0) {
-    for (const file of formData.images) {
-      const formDataMedia = new FormData();
-      formDataMedia.append("file", file);
+    // Handle media uploads
+    const mediaIds = [];
+    if (formData.images.length > 0) {
+      for (const file of formData.images) {
+        const formDataMedia = new FormData();
+        formDataMedia.append("file", file);
 
-      const mediaResponse = await fetch("https://beekeys-proxy.onrender.com/upload-media", {
+        const mediaResponse = await fetch("https://beekeys-proxy.onrender.com/upload-media", {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${auth}`,
+          },
+          body: formDataMedia,
+        });
+
+        if (!mediaResponse.ok) {
+          throw new Error(`Media upload failed: ${await mediaResponse.text()}`);
+        }
+
+        const mediaResult = await mediaResponse.json();
+        console.log("Media Upload Result:", mediaResult);
+        mediaIds.push(mediaResult.media?.id || mediaResult.id); // Adjust based on response
+      }
+    }
+
+    // Prepare post data
+    const postData = {
+      title: formData.businessName || "Untitled Business",
+      content: formData.description || "No description provided.",
+      status: "publish",
+      meta: {
+        phone: formData.phone || "",
+        email: formData.email || "",
+        tags: formData.tags || "",
+        isCACRegistered: formData.isCACRegistered || false,
+        slogan: formData.slogan === "null" ? null : formData.slogan || "",
+        hasBranches: formData.hasBranches || false,
+        website: formData.website || "",
+        address: formData.address || "",
+        mediaIds: mediaIds,
+      },
+    };
+
+    console.log("Post Data:", postData);
+
+    try {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Basic ${auth}`,
         },
-        body: formDataMedia,
+        body: JSON.stringify(postData),
       });
 
-      if (!mediaResponse.ok) throw new Error("Media upload failed");
-      const mediaResult = await mediaResponse.json();
-      mediaIds.push(mediaResult.id);
-    }
-  }
+      console.log("Response Status:", response.status);
+      const result = await response.json();
+      console.log("Success Result:", result);
 
-  // Prepare post data
-  const postData = {
-    title: formData.businessName || "Untitled Business",
-    content: formData.description || "No description provided.",
-    status: "publish",
-    meta: {
-      phone: formData.phone || "",
-      email: formData.email || "",
-      tags: formData.tags || "",
-      isCACRegistered: formData.isCACRegistered || false,
-      slogan: formData.slogan || "",
-      hasBranches: formData.hasBranches || false,
-      website: formData.website || "",
-      address: formData.address || "",
-      mediaIds: mediaIds, // Attach media IDs
-    },
+      if (!response.ok) {
+        throw new Error(result.error || result.details || "Submission failed");
+      }
+
+      if (!result.success || !result.beekeysResponse) {
+        throw new Error("Unexpected response from Beekeys");
+      }
+
+      setShowModal(true);
+    } catch (error) {
+      console.error("Submission Error:", error);
+      setErrorMessage(error.message);
+      setShowErrorModal(true);
+    } finally {
+      setIsLoading(false);
+    }
   };
-
-  console.log("Post Data:", postData);
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Basic ${auth}`,
-      },
-      body: JSON.stringify(postData),
-    });
-
-    console.log("Response Status:", response.status);
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.log("Error Data:", errorData);
-      throw new Error(errorData.message || "Submission failed");
-    }
-
-    const result = await response.json();
-    console.log("Success Result:", result);
-    setShowModal(true);
-  } catch (error) {
-    console.error("Submission Error:", error);
-    setErrorMessage(error.message);
-    setShowErrorModal(true);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -124,23 +129,17 @@ const handleSubmit = async () => {
         <div className="text-center mb-10">
           <h1 className="text-2xl font-semibold">Beekeys Listing Form</h1>
           <p className="text-sm text-gray-600 mt-1">
-            Fields marked with an <span className="text-red-500">*</span> are
-            required
+            Fields marked with an <span className="text-red-500">*</span> are required
           </p>
         </div>
 
         {/* Stepper */}
         <div className="flex justify-between items-center mb-10">
           {[1, 2, 3, 4].map((step) => (
-            <div
-              key={step}
-              className="flex flex-col items-center text-center flex-1"
-            >
+            <div key={step} className="flex flex-col items-center text-center flex-1">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold ${
-                  step === 4
-                    ? "bg-yellow-500 text-white"
-                    : "bg-gray-200 text-gray-700"
+                  step === 4 ? "bg-yellow-500 text-white" : "bg-gray-200 text-gray-700"
                 }`}
               >
                 {step}
@@ -157,38 +156,17 @@ const handleSubmit = async () => {
 
         {/* Review Summary */}
         <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 mb-8">
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">
-            Review your submission
-          </h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-800">Review your submission</h2>
           <ul className="text-sm text-gray-700 space-y-2">
-            <li>
-              <strong>Business Name:</strong> {formData.businessName}
-            </li>
-            <li>
-              <strong>CAC Registered:</strong>{" "}
-              {formData.isCACRegistered ? "Yes" : "No"}
-            </li>
-            <li>
-              <strong>Slogan:</strong> {formData.slogan}
-            </li>
-            <li>
-              <strong>Has Branches:</strong> {formData.hasBranches ? "Yes" : "No"}
-            </li>
-            <li>
-              <strong>Phone:</strong> {formData.phone}
-            </li>
-            <li>
-              <strong>Email:</strong> {formData.email}
-            </li>
-            <li>
-              <strong>Tags:</strong> {formData.tags}
-            </li>
-            <li>
-              <strong>Description:</strong> {formData.description}
-            </li>
-            <li>
-              <strong>Images:</strong> {formData.images.length} file(s) selected
-            </li>
+            <li><strong>Business Name:</strong> {formData.businessName}</li>
+            <li><strong>CAC Registered:</strong> {formData.isCACRegistered ? "Yes" : "No"}</li>
+            <li><strong>Slogan:</strong> {formData.slogan}</li>
+            <li><strong>Has Branches:</strong> {formData.hasBranches ? "Yes" : "No"}</li>
+            <li><strong>Phone:</strong> {formData.phone}</li>
+            <li><strong>Email:</strong> {formData.email}</li>
+            <li><strong>Tags:</strong> {formData.tags}</li>
+            <li><strong>Description:</strong> {formData.description}</li>
+            <li><strong>Images:</strong> {formData.images.length} file(s) selected</li>
           </ul>
         </div>
 
@@ -218,12 +196,8 @@ const handleSubmit = async () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-sm mx-auto rounded-lg shadow-lg p-6 text-center animate-fadeIn">
-            <h3 className="text-xl font-semibold text-green-600 mb-3">
-              🎉 Submission Successful!
-            </h3>
-            <p className="text-sm text-gray-700 mb-6">
-              Your business has been successfully listed.
-            </p>
+            <h3 className="text-xl font-semibold text-green-600 mb-3">🎉 Submission Successful!</h3>
+            <p className="text-sm text-gray-700 mb-6">Your business has been successfully listed.</p>
             <button
               onClick={handleCloseModal}
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-full transition"
@@ -238,9 +212,7 @@ const handleSubmit = async () => {
       {showErrorModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-sm mx-auto rounded-lg shadow-lg p-6 text-center animate-fadeIn">
-            <h3 className="text-xl font-semibold text-red-600 mb-3">
-              ❌ Submission Failed
-            </h3>
+            <h3 className="text-xl font-semibold text-red-600 mb-3">❌ Submission Failed</h3>
             <p className="text-sm text-gray-700 mb-6">{errorMessage}</p>
             <button
               onClick={handleCloseErrorModal}
