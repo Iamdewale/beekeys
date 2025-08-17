@@ -22,7 +22,7 @@ const BusinessListingStepFour = () => {
     try {
       // 🔹 Step 1: Upload images (if any)
       const mediaIds = [];
-      if (formData.images.length > 0) {
+      if (formData.images && formData.images.length > 0) {
         for (const file of formData.images) {
           const formDataMedia = new FormData();
           formDataMedia.append("file", file);
@@ -39,12 +39,11 @@ const BusinessListingStepFour = () => {
           console.log("Media Upload Result:", mediaResult);
 
           if (!mediaResponse.ok || !mediaResult.success) {
-            throw new Error(
-              mediaResult.error?.message || "Media upload failed"
-            );
+            throw new Error(mediaResult.error || "Media upload failed");
           }
 
-          mediaIds.push(mediaResult.data.id);
+          // ✅ FIXED: use mediaResult.media.id
+          mediaIds.push(mediaResult.media.id);
         }
       }
 
@@ -79,7 +78,7 @@ const BusinessListingStepFour = () => {
       console.log("Submit Result:", result);
 
       if (!response.ok || !result.success) {
-        throw new Error(result.error?.message || "Submission failed");
+        throw new Error(result.error || result.details || "Submission failed");
       }
 
       setShowModal(true);
