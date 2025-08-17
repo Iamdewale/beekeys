@@ -3,49 +3,46 @@ import { useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
 import { useFormData } from "../contexts/FormDataContext";
+import { getFormFields } from "../api"; // ✅ fetch fieldMap from proxy
 
 const BusinessListingStepFour = () => {
   const navigate = useNavigate();
   const { formData } = useFormData();
-
-  const [fieldMap, setFieldMap] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldMap, setFieldMap] = useState(null);
 
-  // 🔹 Fetch Ninja Form field IDs dynamically
+  // ✅ Fetch fieldMap from proxy when component mounts
   useEffect(() => {
-    async function fetchFields() {
+    async function loadFields() {
       try {
-        const res = await fetch(
-          "https://beekeys-proxy.onrender.com/form-fields/4"
-        );
-        const data = await res.json();
-        if (data.success) {
-          const map = {};
-          data.fields.forEach((f) => {
-            map[f.label] = f.id;
-          });
-          setFieldMap(map);
-        } else {
-          console.error("Failed to load form fields:", data.error);
-        }
+        const res = await getFormFields(4); // 4 = Beekeys Listing Form
+        setFieldMap(res.fieldMap);
       } catch (err) {
-        console.error("Error fetching form fields:", err);
+        console.error("Failed to load field map", err);
+        setErrorMessage("Could not load form fields.");
+        setShowErrorModal(true);
       }
     }
-    fetchFields();
+    loadFields();
   }, []);
 
   const handleBack = () => navigate(-1);
 
   const handleSubmit = async () => {
+    if (!fieldMap) {
+      setErrorMessage("Form fields not loaded.");
+      setShowErrorModal(true);
+      return;
+    }
+
     setIsLoading(true);
     try {
       // 1️⃣ Upload images
       let uploadedFiles = [];
-      if (formData.images && formData.images.length > 0) {
+      if (formData.images?.length > 0) {
         for (const file of formData.images) {
           const fileForm = new FormData();
           fileForm.append("file", file);
@@ -57,38 +54,37 @@ const BusinessListingStepFour = () => {
           const result = await res.json();
           console.log("Upload result:", result);
 
-          if (
-            !res.ok ||
-            !result.success ||
-            !result.wpResponse?.data?.tmp_name
-          ) {
+          if (!res.ok || !result.success || !result.wpResponse?.data?.tmp_name) {
             throw new Error(result.error || "File upload failed");
           }
 
           uploadedFiles.push({
             name: file.name,
             tmp_name: result.wpResponse.data.tmp_name,
-            fieldID: fieldMap["Upload files"], // use dynamic field ID
+            fieldID: fieldMap.imageupload, // ✅ use dynamic field ID
           });
         }
       }
 
-      // 2️⃣ Build fields dynamically with fetched IDs
+      // 2️⃣ Build dynamic fields payload
       const fields = {
-        [fieldMap["What is the Full Name of your Business, Service or Brand"]]:
-          { id: fieldMap["What is the Full Name of your Business, Service or Brand"], value: formData.businessName },
-        [fieldMap["Email"]]: { id: fieldMap["Email"], value: formData.email },
-        [fieldMap["Phone"]]: { id: fieldMap["Phone"], value: formData.phone },
-        [fieldMap["Description"]]: { id: fieldMap["Description"], value: formData.description },
-        [fieldMap["Upload files"]]: {
-          id: fieldMap["Upload files"],
-          value: uploadedFiles.length ? 1 : "",
-          files: uploadedFiles,
-        },
+        [fieldMap.businessname]: { value: formData.businessName || "" },
+        [fieldMap.firstname]: { value: formData.firstName || "" },
+        [fieldMap.lastname]: { value: formData.lastName || "" },
+        [fieldMap.phone]: { value: formData.phone || "" },
+        [fieldMap.email]: { value: formData.email || "" },
+        [fieldMap.address]: { value: formData.address || "" },
+        [fieldMap.slogan]: { value: formData.slogan || "" },
+        [fieldMap.tags]: { value: formData.tags || "" },
+        [fieldMap.description]: { value: formData.description || "" },
+        [fieldMap.iscacregistered]: { value: formData.isCACRegistered ? "Yes" : "No" },
+        [fieldMap.hasbranches]: { value: formData.hasBranches ? "Yes" : "No" },
+        [fieldMap.website]: { value: formData.website || "" },
+        [fieldMap.imageupload]: { value: 1, files: uploadedFiles },
       };
 
       const formPayload = {
-        id: "4", // 🔹 use Beekeys Listing Form
+        id: "4", // ✅ Beekeys Listing Form ID
         fields,
         settings: {
           objectType: "Form Setting",
@@ -97,7 +93,7 @@ const BusinessListingStepFour = () => {
         },
       };
 
-      // 3️⃣ Submit form
+      // 3️⃣ Submit via proxy
       const response = await fetch(
         "https://beekeys-proxy.onrender.com/submit-ninja",
         {
@@ -129,21 +125,25 @@ const BusinessListingStepFour = () => {
       <NavbarNG />
 
       <div className="flex-grow pt-32 pb-24 px-4 max-w-3xl mx-auto">
-        {/* ✅ Review Section */}
+        {/* Review Section */}
         <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 mb-8">
           <h2 className="text-lg font-semibold mb-4 text-gray-800">
             Review your submission
           </h2>
           <ul className="text-sm text-gray-700 space-y-2">
             <li><strong>Business Name:</strong> {formData.businessName}</li>
-            <li><strong>Email:</strong> {formData.email}</li>
+            <li><strong>CAC Registered:</strong> {formData.isCACRegistered ? "Yes" : "No"}</li>
+            <li><strong>Slogan:</strong> {formData.slogan}</li>
+            <li><strong>Has Branches:</strong> {formData.hasBranches ? "Yes" : "No"}</li>
             <li><strong>Phone:</strong> {formData.phone}</li>
+            <li><strong>Email:</strong> {formData.email}</li>
+            <li><strong>Tags:</strong> {formData.tags}</li>
             <li><strong>Description:</strong> {formData.description}</li>
-            <li><strong>Images:</strong> {formData.images?.length || 0} file(s)</li>
+            <li><strong>Images:</strong> {formData.images?.length || 0} file(s) selected</li>
           </ul>
         </div>
 
-        {/* ✅ Actions */}
+        {/* Buttons */}
         <div className="pt-4 flex gap-4">
           <button
             type="button"
@@ -155,7 +155,7 @@ const BusinessListingStepFour = () => {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={isLoading || Object.keys(fieldMap).length === 0}
+            disabled={isLoading}
             className="w-1/2 bg-yellow-500 text-white font-medium py-3 rounded-full hover:bg-yellow-600 transition disabled:opacity-50"
           >
             {isLoading ? "Submitting..." : "Submit"}
@@ -165,7 +165,7 @@ const BusinessListingStepFour = () => {
 
       <Footer />
 
-      {/* ✅ Success Modal */}
+      {/* Success Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-sm mx-auto rounded-lg shadow-lg p-6 text-center">
@@ -188,7 +188,7 @@ const BusinessListingStepFour = () => {
         </div>
       )}
 
-      {/* ✅ Error Modal */}
+      {/* Error Modal */}
       {showErrorModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-sm mx-auto rounded-lg shadow-lg p-6 text-center">
