@@ -18,46 +18,24 @@ const BusinessListingStepFour = () => {
     setIsLoading(true);
 
     try {
-      // 🔹 Upload Images
-      const mediaIds = [];
-      if (formData.images && formData.images.length > 0) {
-        for (const file of formData.images) {
-          const formDataMedia = new FormData();
-          formDataMedia.append("file", file);
-
-          const mediaResponse = await fetch(
-            "https://beekeys-proxy.onrender.com/upload-media",
-            { method: "POST", body: formDataMedia }
-          );
-
-          const mediaResult = await mediaResponse.json();
-          if (!mediaResponse.ok || !mediaResult.success || !mediaResult.media?.id) {
-            throw new Error(mediaResult.error || "Media upload failed");
-          }
-
-          mediaIds.push(mediaResult.media.id);
-        }
-      }
-
-      // 🔹 Prepare Post Data
+      // ✅ Build payload exactly how Beekeys expects (from admin-ajax.php → Form Data)
       const postData = {
-        title: formData.businessName || "Untitled Business",
-        content: formData.description || "No description provided.",
-        status: "publish",
-        meta: {
-          phone: formData.phone || "",
-          email: formData.email || "",
-          tags: formData.tags || "",
-          isCACRegistered: formData.isCACRegistered || false,
-          slogan: formData.slogan === "null" ? null : formData.slogan || "",
-          hasBranches: formData.hasBranches || false,
-          website: formData.website || "",
-          address: formData.address || "",
-          mediaIds,
-        },
+        action: "geodir_add_listing", // 👈 Beekeys hook (you must confirm this from DevTools)
+        post_title: formData.businessName || "Untitled Business",
+        post_content: formData.description || "No description provided.",
+        phone: formData.phone || "",
+        email: formData.email || "",
+        website: formData.website || "",
+        address: formData.address || "",
+        tags: formData.tags || "",
+        slogan: formData.slogan || "",
+        isCACRegistered: formData.isCACRegistered ? "Yes" : "No",
+        hasBranches: formData.hasBranches ? "Yes" : "No",
       };
 
-      // 🔹 Submit via Proxy
+      console.log("Submitting postData:", postData);
+
+      // ✅ Send to proxy → proxy sends as x-www-form-urlencoded to Beekeys
       const response = await fetch("https://beekeys-proxy.onrender.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -65,6 +43,8 @@ const BusinessListingStepFour = () => {
       });
 
       const result = await response.json();
+      console.log("Proxy Response:", result);
+
       if (!response.ok || !result.success) {
         throw new Error(result.error || result.details || "Submission failed");
       }
@@ -123,10 +103,11 @@ const BusinessListingStepFour = () => {
             <li><strong>Email:</strong> {formData.email}</li>
             <li><strong>Tags:</strong> {formData.tags}</li>
             <li><strong>Description:</strong> {formData.description}</li>
-            <li><strong>Images:</strong> {formData.images.length} file(s) selected</li>
+            <li><strong>Images:</strong> {formData.images?.length || 0} file(s) selected</li>
           </ul>
         </div>
 
+        {/* Actions */}
         <div className="pt-4 flex gap-4">
           <button
             type="button"
