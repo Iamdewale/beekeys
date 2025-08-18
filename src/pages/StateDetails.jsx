@@ -1,31 +1,33 @@
+// src/pages/StateDetails.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom"; // <-- added useNavigate here
+import { useParams, useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
-import { fetchMarkersByState } from "../services/api"; 
+import { fetchStateDetails } from "../services/api"; 
 
 export default function StateDetails() {
   const { slug } = useParams();
-  const navigate = useNavigate();  // <-- moved here for clarity
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
+  const [region, setRegion] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const loadMarkers = async () => {
+    const loadState = async () => {
       try {
-        const data = await fetchMarkersByState(slug);
-        setMarkers(data);
+        const data = await fetchStateDetails(slug);
+        setRegion(data.region);
+        setMarkers(data.markers || []);
       } catch (err) {
         console.error(err);
-        setError("Failed to load data for this state.");
+        setError("Failed to load state details.");
       } finally {
         setLoading(false);
       }
     };
-
-    loadMarkers();
+    loadState();
   }, [slug]);
 
   return (
@@ -46,11 +48,21 @@ export default function StateDetails() {
         {loading && <p className="text-gray-600">Loading services...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
+        {region && (
+          <div className="mb-6 bg-gray-50 p-4 rounded shadow">
+            <h2 className="text-xl font-semibold">{region.name}</h2>
+            <p className="text-gray-600">Slug: {region.slug}</p>
+            {region.country && <p className="text-gray-600">Country: {region.country}</p>}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
           {markers.map((item) => (
             <div key={item.id} className="bg-white rounded shadow p-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-2">{item.title}</h3>
-              <p className="text-sm text-gray-500">Lat: {item.lat}, Lng: {item.lng}</p>
+              <p className="text-sm text-gray-500">
+                Lat: {item.lat}, Lng: {item.lng}
+              </p>
               {item.icon && (
                 <img
                   src={item.icon}

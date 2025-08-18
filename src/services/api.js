@@ -12,16 +12,14 @@ export const searchBusinesses = async (query) => {
   return response.json();
 };
 
+// src/services/api.js
+
 // 🌍 Fetch regions
 export const fetchRegions = async () => {
   try {
     const response = await fetch("https://beekeys-proxy.onrender.com/api/regions");
-    if (!response.ok) {
-      throw new Error(`Failed to fetch regions (status ${response.status})`);
-    }
-
+    if (!response.ok) throw new Error(`Failed to fetch regions`);
     const json = await response.json();
-    // ✅ expect backend already normalizes into { data: [...] }
     return Array.isArray(json.data) ? json.data : [];
   } catch (error) {
     console.error("Error fetching regions:", error.message);
@@ -33,14 +31,18 @@ export const fetchRegions = async () => {
 export async function fetchMarkersByState(stateSlug) {
   const response = await fetch(`https://beekeys-proxy.onrender.com/api/markers/${stateSlug}`);
   const json = await response.json();
-
-  if (!response.ok) {
-    throw new Error(json.error || "Failed to fetch markers");
-  }
-
-  // ✅ backend already returns { data: [...] }
+  if (!response.ok) throw new Error(json.error || "Failed to fetch markers");
   return json.data || [];
 }
+
+// 🆕 Combined state details
+export async function fetchStateDetails(slug) {
+  const response = await fetch(`https://beekeys-proxy.onrender.com/api/state-details/${slug}`);
+  const json = await response.json();
+  if (!response.ok) throw new Error(json.error || "Failed to fetch state details");
+  return json;
+}
+
 
 // 📝 Fetch form fields (dynamic from WP/Ninja)
 export async function getFormFields(formId = 4) {
