@@ -26,7 +26,7 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("beekeys_token");
     window.dispatchEvent(new Event("beekeys-login-status")); // Notify components
-    navigate("/.select-role");
+    navigate("/select-role");
   };
 
   return (
