@@ -6,9 +6,8 @@ import Footer from "../components/Footer";
 import { fetchStateDetails } from "../services/api";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-// import nigeria from "../assets/nigeria-map.jpg"; // adjust to your path
-import { FaSearch } from "react-icons/fa";
 import nigeria from "../assets/images/HeroNig.jpg";
+import { FaSearch } from "react-icons/fa";
 
 // ✅ Configure default Leaflet icons
 const DefaultIcon = new L.Icon({
@@ -45,8 +44,8 @@ export default function StateDetails() {
       setError("");
       try {
         const data = await fetchStateDetails(slug);
-        setRegion(data.region || null);
-        setMarkers(Array.isArray(data.markers) ? data.markers : []);
+        setRegion(data?.region || null);
+        setMarkers(Array.isArray(data?.markers) ? data.markers : []);
       } catch (err) {
         console.error(err);
         setError("Failed to load data for this state.");
@@ -69,7 +68,7 @@ export default function StateDetails() {
 
   const renderRegionInfo = () =>
     region && (
-      <div className="mb-6 text-gray-700">
+      <div className="mb-6 text-gray-700 text-center">
         <p>
           <strong>Region Name:</strong> {region.name}
         </p>
@@ -80,7 +79,7 @@ export default function StateDetails() {
     );
 
   const renderMap = () =>
-    markers.length > 0 && (
+    markers.length > 0 && markers[0]?.lat && markers[0]?.lng && (
       <div className="h-96 w-full mb-8 rounded-lg shadow overflow-hidden">
         <MapContainer
           center={[markers[0].lat, markers[0].lng]}
@@ -202,11 +201,13 @@ export default function StateDetails() {
         </div>
 
         {/* Loading & Error */}
-        {loading && <p className="text-gray-600 text-center">Loading services...</p>}
-        {error && <p className="text-red-500 text-center">{error}</p>}
+        {loading && (
+          <p className="text-gray-300 text-center mt-4">Loading services...</p>
+        )}
+        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
 
         {/* Region Info */}
-        {renderRegionInfo()}
+        {!loading && !error && renderRegionInfo()}
 
         {/* Results */}
         {!loading && !error && (
