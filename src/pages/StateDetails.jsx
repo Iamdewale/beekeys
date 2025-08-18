@@ -4,6 +4,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
 import { fetchStateDetails } from "../services/api";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
 
 export default function StateDetails() {
   const { slug } = useParams();
@@ -30,6 +32,13 @@ export default function StateDetails() {
     loadDetails();
   }, [slug]);
 
+  // Default icon fix for React Leaflet (so markers show up properly)
+  const DefaultIcon = new L.Icon({
+    iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+    shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+  });
+  L.Marker.prototype.options.icon = DefaultIcon;
+
   return (
     <main className="font-sans">
       <NavbarNG />
@@ -48,7 +57,7 @@ export default function StateDetails() {
         {loading && <p className="text-gray-600">Loading services...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
-        {/* Optional region meta */}
+        {/* Region meta info */}
         {region && (
           <div className="mb-6 text-gray-700">
             <p>
@@ -60,6 +69,41 @@ export default function StateDetails() {
           </div>
         )}
 
+        {/* Map Section */}
+        {markers.length > 0 && (
+          <div className="h-96 w-full mb-8 rounded-lg shadow overflow-hidden">
+            <MapContainer
+              center={[markers[0].lat, markers[0].lng]}
+              zoom={7}
+              className="h-full w-full"
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              {markers.map((item) => (
+                <Marker
+                  key={item.id}
+                  position={[item.lat, item.lng]}
+                  eventHandlers={{
+                    click: () => navigate(`/business/${item.id}`),
+                  }}
+                >
+                  <Popup>
+                    <div className="text-center">
+                      <h3 className="font-semibold">{item.title}</h3>
+                      <button
+                        onClick={() => navigate(`/business/${item.id}`)}
+                        className="mt-2 text-blue-600 hover:underline text-sm"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+            </MapContainer>
+          </div>
+        )}
+
+        {/* Grid View */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
           {markers.map((item) => (
             <div
