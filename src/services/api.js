@@ -1,4 +1,5 @@
 // src/services/api.js
+import axios from "axios";
 
 const BASE_URL = "https://beekeys-proxy.onrender.com";
 
@@ -78,17 +79,44 @@ export async function fetchRegions() {
  * @param {string} slug
  * @returns {Promise<{region: object|null, markers: any[]}>}
  */
+
 export async function fetchStateDetails(slug) {
-  const data = await fetchJSON(
-    `/api/state-details/${slug}`,
-    "Failed to fetch state details",
-    { region: null, markers: [] }
-  );
-  return {
-    region: data?.region || null,
-    markers: Array.isArray(data?.markers) ? data.markers : []
-  };
+  const baseUrl = "https://app.beekeys.com/nigeria/wp-json/geodir/v2/listings";
+  const variants = [
+    slug,
+    `${slug}-state`,
+    slug.replace(/-state$/, ""),
+    slug.replace(/\s+/g, "-"),
+  ];
+
+  let lastErr = null;
+
+  for (const variant of variants) {
+    try {
+      const url = `${baseUrl}?country=nigeria&region=${variant}`;
+      const res = await axios.get(url);
+      // Normalise shape so StateDetails.jsx is happy
+      return {
+        region: { name: variant.replace(/-/g, " "), slug: variant },
+        markers: Array.isArray(res.data) ? res.data : [],
+      };
+    } catch (err) {
+      if (err.response?.status === 404) {
+        // Try next variant
+        continue;
+      }
+      lastErr = err;
+    }
+  }
+
+  // If nothing matched, return a safe empty state
+  if (!lastErr) {
+    return { region: { name: slug.replace(/-/g, " "), slug }, markers: [] };
+  }
+
+  throw lastErr;
 }
+
 
 /**
  * 📝 Fetch dynamic form fields (from WP/Ninja backend).
