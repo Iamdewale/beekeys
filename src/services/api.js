@@ -38,11 +38,9 @@ export async function fetchMarkersByState(stateSlug) {
 // 🆕 Combined state details
 export async function fetchStateDetails(slug) {
   const response = await fetch(`https://beekeys-proxy.onrender.com/api/state-details/${slug}`);
-  const json = await response.json();
-  if (!response.ok) throw new Error(json.error || "Failed to fetch state details");
-  return json;
+  if (!response.ok) throw new Error("Failed to fetch state details");
+  return response.json();
 }
-
 
 // 📝 Fetch form fields (dynamic from WP/Ninja)
 export async function getFormFields(formId = 4) {
