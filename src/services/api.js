@@ -37,12 +37,22 @@ export const fetchRegions = async () => {
 };
 
 // 📍 Fetch markers by state
-export async function fetchMarkersByState(stateSlug) {
-  const response = await fetch(`https://beekeys-proxy.onrender.com/api/markers/${stateSlug}`);
+
+export async function fetchStateDetails(stateSlug) {
+  const response = await fetch(`https://beekeys-proxy.onrender.com/api/state-details/${stateSlug}`);
   const json = await response.json();
-  if (!response.ok) throw new Error(json.error || "Failed to fetch markers");
-  return json.data || [];
+
+  if (!response.ok) {
+    throw new Error(json.error || "Failed to fetch state details");
+  }
+
+  return {
+    region: json.region || null,
+    markers: Array.isArray(json.markers) ? json.markers : []
+  };
 }
+
+
 
 // 🆕 Combined state details
 export async function fetchStateDetails(slug) {
