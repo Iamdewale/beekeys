@@ -12,7 +12,16 @@ export const searchBusinesses = async (query) => {
   return response.json();
 };
 
-// src/services/api.js
+// 📍 Single business details
+export async function fetchBusinessDetails(id) {
+  const response = await fetch(`https://beekeys-proxy.onrender.com/api/business/${id}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch business details (status ${response.status})`);
+  }
+  const json = await response.json();
+  return json.data || null;
+}
+
 
 // 🌍 Fetch regions
 export const fetchRegions = async () => {

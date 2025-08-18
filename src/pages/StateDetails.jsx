@@ -51,14 +51,22 @@ export default function StateDetails() {
         {/* Optional region meta */}
         {region && (
           <div className="mb-6 text-gray-700">
-            <p><strong>Region Name:</strong> {region.name}</p>
-            <p><strong>Slug:</strong> {region.slug}</p>
+            <p>
+              <strong>Region Name:</strong> {region.name}
+            </p>
+            <p>
+              <strong>Slug:</strong> {region.slug}
+            </p>
           </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
           {markers.map((item) => (
-            <div key={item.id} className="bg-white rounded shadow p-4">
+            <div
+              key={item.id}
+              className="bg-white rounded shadow p-4 cursor-pointer hover:shadow-md"
+              onClick={() => navigate(`/business/${item.id}`)}
+            >
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 {item.title}
               </h3>
@@ -66,7 +74,11 @@ export default function StateDetails() {
                 Lat: {item.lat}, Lng: {item.lng}
               </p>
               {item.icon && (
-                <img src={item.icon} alt={item.title} className="w-10 h-10 mt-2" />
+                <img
+                  src={item.icon}
+                  alt={item.title}
+                  className="w-10 h-10 mt-2"
+                />
               )}
             </div>
           ))}

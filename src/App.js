@@ -22,6 +22,7 @@ import ContributorsFormStepTwo from './pages/ContributorsFormStepTwo';
 import ContributorsFormStepThree from './pages/ContributorsFormStepThree';
 import ContributorsFormStepFour from './pages/ContributorsFormStepFour';
 import { FormDataProvider } from './contexts/FormDataContext';
+import BusinessDetails from './pages/BusinessDetails';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/explore" element={<ExploreLocation />} />
         <Route path="/nigeria" element={<ExpNig />} />
         <Route path="/state/:slug" element={<StateDetails />} />
+        <Route path="/business/:id" element={<BusinessDetails />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/about" element={<About />} />
         <Route path="/vendor" element={<Vendor />} />
