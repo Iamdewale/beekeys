@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ScrollToTop from "./components/ScrollToTop";
+import "leaflet/dist/leaflet.css";
 
 import Home from './pages/Home';
 import ExploreLocation from './pages/ExploreLocation';
@@ -23,6 +24,7 @@ import ContributorsFormStepThree from './pages/ContributorsFormStepThree';
 import ContributorsFormStepFour from './pages/ContributorsFormStepFour';
 import { FormDataProvider } from './contexts/FormDataContext';
 import BusinessDetails from './pages/BusinessDetails';
+
 
 function App() {
   return (
