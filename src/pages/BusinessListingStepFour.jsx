@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
 import { useFormData } from "../contexts/FormDataContext";
-import { getFormFields } from "../api"; // ✅ fetch fieldMap from proxy
+import { getFormFields } from "../services/api"; // ✅ fetch fieldMap from proxy
 
 const BusinessListingStepFour = () => {
   const navigate = useNavigate();
