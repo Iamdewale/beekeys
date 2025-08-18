@@ -144,7 +144,7 @@ export default function StateDetails() {
       <NavbarNG />
 
       {/* Hero Section */}
-      <section className="relative w-full text-white bg-gray-900 min-h-[899px]">
+      <section className="relative w-full text-white bg-gray-900 min-h-[399px]">
         <img
           src={nigeria}
           alt="Nigeria Map"
