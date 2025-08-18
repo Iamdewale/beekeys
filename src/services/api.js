@@ -4,87 +4,101 @@ const BASE_URL = "https://beekeys-proxy.onrender.com";
 
 /**
  * Generic JSON fetch helper with consistent error handling.
+ * @template T
  * @param {string} endpoint - API endpoint (relative to BASE_URL).
- * @param {string} [errorMsg] - Custom error message on failure.
- * @returns {Promise<any>}
+ * @param {string} [errorMsg="Request failed"] - Custom error message on failure.
+ * @param {T} [fallback=null] - Value to return if request fails.
+ * @returns {Promise<T>}
  */
-async function fetchJSON(endpoint, errorMsg = "Request failed") {
-  const res = await fetch(`${BASE_URL}${endpoint}`);
-  let json;
-
+async function fetchJSON(endpoint, errorMsg = "Request failed", fallback = null) {
   try {
-    json = await res.json();
-  } catch {
-    throw new Error(`${errorMsg}: Invalid JSON`);
-  }
+    const res = await fetch(`${BASE_URL}${endpoint}`);
 
-  if (!res.ok) {
-    throw new Error(json?.error || `${errorMsg} (status ${res.status})`);
-  }
+    let json;
+    try {
+      json = await res.json();
+    } catch {
+      throw new Error(`${errorMsg}: Invalid JSON`);
+    }
 
-  return json;
+    if (!res.ok) {
+      throw new Error(json?.error || `${errorMsg} (status ${res.status})`);
+    }
+
+    return json;
+  } catch (err) {
+    console.error(`❌ ${errorMsg}:`, err.message);
+    return fallback;
+  }
 }
 
 /**
  * 🔎 Search businesses.
  * @param {string} query - Search term.
+ * @returns {Promise<{success: boolean, results: any[]}>}
  */
 export async function searchBusinesses(query) {
-  const data = await fetchJSON(
+  return fetchJSON(
     `/api/businesses?search=${encodeURIComponent(query)}`,
-    "Failed to fetch business search results"
+    "Failed to fetch business search results",
+    { success: false, results: [] }
   );
-  return data; // shape: { success, results }
 }
 
 /**
  * 📍 Get single business details by ID.
  * @param {number|string} id
+ * @returns {Promise<object|null>}
  */
 export async function fetchBusinessDetails(id) {
   const data = await fetchJSON(
     `/api/business/${id}`,
-    "Failed to fetch business details"
+    "Failed to fetch business details",
+    { business: null }
   );
-  return data.business || null;
+  return data?.business || null;
 }
 
 /**
  * 🌍 Fetch all regions.
+ * @returns {Promise<any[]>}
  */
 export async function fetchRegions() {
-  try {
-    const data = await fetchJSON("/api/regions", "Failed to fetch regions");
-    return Array.isArray(data.data) ? data.data : [];
-  } catch (err) {
-    console.error("Error fetching regions:", err.message);
-    return [];
-  }
+  const data = await fetchJSON(
+    "/api/regions",
+    "Failed to fetch regions",
+    { data: [] }
+  );
+  return Array.isArray(data?.data) ? data.data : [];
 }
 
 /**
  * 📍 Get combined state details (region + markers).
+ * Works for any state slug if backend is configured as refactored.
  * @param {string} slug
+ * @returns {Promise<{region: object|null, markers: any[]}>}
  */
 export async function fetchStateDetails(slug) {
   const data = await fetchJSON(
     `/api/state-details/${slug}`,
-    "Failed to fetch state details"
+    "Failed to fetch state details",
+    { region: null, markers: [] }
   );
   return {
-    region: data.region || null,
-    markers: Array.isArray(data.markers) ? data.markers : []
+    region: data?.region || null,
+    markers: Array.isArray(data?.markers) ? data.markers : []
   };
 }
 
 /**
  * 📝 Fetch dynamic form fields (from WP/Ninja backend).
  * @param {number} [formId=4]
+ * @returns {Promise<any>}
  */
 export async function getFormFields(formId = 4) {
-  const data = await fetchJSON(
+  return fetchJSON(
     `/form-fields/${formId}`,
-    "Failed to fetch form fields"
+    "Failed to fetch form fields",
+    {}
   );
-  return data; // backend should normalize
 }
