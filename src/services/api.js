@@ -15,13 +15,14 @@ export const searchBusinesses = async (query) => {
 // 📍 Single business details
 export async function fetchBusinessDetails(id) {
   const response = await fetch(`https://beekeys-proxy.onrender.com/api/business/${id}`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch business details (status ${response.status})`);
-  }
   const json = await response.json();
-  return json.data || null;
-}
 
+  if (!response.ok) {
+    throw new Error(json.error || "Failed to fetch business details");
+  }
+
+  return json.business || null;
+}
 
 // 🌍 Fetch regions
 export const fetchRegions = async () => {
@@ -36,10 +37,9 @@ export const fetchRegions = async () => {
   }
 };
 
-// 📍 Fetch markers by state
-
-export async function fetchStateDetails(stateSlug) {
-  const response = await fetch(`https://beekeys-proxy.onrender.com/api/state-details/${stateSlug}`);
+// 📍 Combined state details (region + markers)
+export async function fetchStateDetails(slug) {
+  const response = await fetch(`https://beekeys-proxy.onrender.com/api/state-details/${slug}`);
   const json = await response.json();
 
   if (!response.ok) {
@@ -50,15 +50,6 @@ export async function fetchStateDetails(stateSlug) {
     region: json.region || null,
     markers: Array.isArray(json.markers) ? json.markers : []
   };
-}
-
-
-
-// 🆕 Combined state details
-export async function fetchStateDetails(slug) {
-  const response = await fetch(`https://beekeys-proxy.onrender.com/api/state-details/${slug}`);
-  if (!response.ok) throw new Error("Failed to fetch state details");
-  return response.json();
 }
 
 // 📝 Fetch form fields (dynamic from WP/Ninja)
