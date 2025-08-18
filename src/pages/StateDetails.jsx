@@ -8,6 +8,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import nigeria from "../assets/nigeria-map.jpg"; // adjust to your path
 import { FaSearch } from "react-icons/fa";
+import nigeria from "../assets/images/HeroNig.jpg";
 
 // ✅ Configure default Leaflet icons
 const DefaultIcon = new L.Icon({
