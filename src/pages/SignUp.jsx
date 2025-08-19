@@ -52,7 +52,7 @@ const SignUp = () => {
 
     try {
       const res = await fetch(
-        "https://app.beekeys.com/wp-json/userswp/v1/register",
+        "https://app.beekeys.com/nigeria/wp-json/userswp/v1/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
