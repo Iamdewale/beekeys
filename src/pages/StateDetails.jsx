@@ -1,3 +1,4 @@
+// src/pages/StateDetails.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
@@ -6,11 +7,10 @@ import { fetchStateDetails } from "../services/api";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import StateHero from "../components/StateHero";  // ✅ correct import
+import stateHeroImg from "../assets/images/statehero.jpg"; // ✅ adjust path if needed
 
-import StateHero from "../components/StateHero";
-import stateHeroImg from "../assets/images/statehero.jpg";
-
-// Default Leaflet marker icons
+// Default Leaflet marker icon
 const DefaultIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
   shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
@@ -42,7 +42,7 @@ export default function StateDetails() {
       setLoading(true);
       setError("");
       try {
-        const data = await fetchStateDetails(slug); // now just calls your proxy
+        const data = await fetchStateDetails(slug);
         setRegion(data.region);
         setMarkers(data.markers);
       } catch (err) {
@@ -58,12 +58,8 @@ export default function StateDetails() {
   const renderRegionInfo = () =>
     region && (
       <div className="mb-6 text-gray-700">
-        <p>
-          <strong>Region Name:</strong> {region.name}
-        </p>
-        <p>
-          <strong>Slug:</strong> {region.slug}
-        </p>
+        <p><strong>Region Name:</strong> {region.name}</p>
+        <p><strong>Slug:</strong> {region.slug}</p>
       </div>
     );
 
@@ -117,11 +113,7 @@ export default function StateDetails() {
               Lat: {item.lat}, Lng: {item.lng}
             </p>
             {item.icon && (
-              <img
-                src={item.icon}
-                alt={item.title}
-                className="w-10 h-10 mt-2"
-              />
+              <img src={item.icon} alt={item.title} className="w-10 h-10 mt-2" />
             )}
           </div>
         ))}
@@ -132,23 +124,20 @@ export default function StateDetails() {
     <main className="font-sans">
       <NavbarNG />
 
+      {/* ✅ Hero section now wired up properly */}
       <StateHero
         title={`Explore Services in ${displayName}`}
         subtitle={region?.name ? `Located in ${region.name} region` : ""}
         backgroundUrl={stateHeroImg}
       />
 
-      <section className="px-6 pt-32 py-16 max-w-6xl mx-auto">
+      <section className="px-6 pt-16 pb-16 max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/nigeria")}
           className="mb-4 text-yellow-600 hover:underline"
         >
           ← Back to States
         </button>
-
-        <h1 className="text-3xl font-bold mb-4 capitalize">
-          Explore Services in {displayName}
-        </h1>
 
         {loading && <p className="text-gray-600">Loading services...</p>}
         {error && <p className="text-red-500">{error}</p>}
@@ -167,6 +156,7 @@ export default function StateDetails() {
           </>
         )}
       </section>
+
       <Footer />
     </main>
   );
