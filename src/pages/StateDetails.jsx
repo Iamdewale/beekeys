@@ -132,7 +132,7 @@ export default function StateDetails() {
       <StateHero
         title={`Explore Services in ${displayName}`}
         subtitle={region?.name ? `Located in ${region.name} region` : ""}
-        backgroundUrl="..assets/images/statehero.jpg" // replace with your actual image path
+        backgroundUrl="../assets/images/statehero.jpg" // replace with your actual image path
       />
       <section className="px-6 pt-32 py-16 max-w-6xl mx-auto">
         <button
