@@ -10,7 +10,6 @@ import "leaflet/dist/leaflet.css";
 import StateHero from "../components/StateHero";
 import stateHeroImg from "../assets/images/statehero.jpg";
 
-
 // Default Leaflet marker icons
 const DefaultIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -134,11 +133,11 @@ export default function StateDetails() {
       <NavbarNG />
 
       <StateHero
-    title={`Explore Services in ${displayName}`}
-    subtitle={region?.name ? `Located in ${region.name} region` : ""}
-    backgroundUrl={stateHeroImg} // or public path
-  />
-      
+        title={`Explore Services in ${displayName}`}
+        subtitle={region?.name ? `Located in ${region.name} region` : ""}
+        backgroundUrl={stateHeroImg}
+      />
+
       <section className="px-6 pt-32 py-16 max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/nigeria")}
