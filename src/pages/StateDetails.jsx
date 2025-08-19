@@ -144,12 +144,7 @@ export default function StateDetails() {
       />
 
       <section className="px-6 pt-16 pb-16 max-w-6xl mx-auto">
-        <button
-          onClick={() => navigate("/nigeria")}
-          className="mb-4 text-yellow-600 hover:underline"
-        >
-          ← Back to States
-        </button>
+        
 
         {loading && <p className="text-gray-600">Loading services...</p>}
         {error && <p className="text-red-500">{error}</p>}
