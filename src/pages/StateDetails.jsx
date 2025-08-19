@@ -129,7 +129,7 @@ export default function StateDetails() {
   return (
     <main className="font-sans">
       <NavbarNG />
-      <HeroSection
+      <StateHero
         title={`Explore Services in ${displayName}`}
         subtitle={region?.name ? `Located in ${region.name} region` : ""}
         backgroundUrl="..assets/images/statehero.jpg" // replace with your actual image path
