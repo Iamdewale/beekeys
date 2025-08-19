@@ -25,7 +25,7 @@ const handleReset = async (e) => {
   setLoading(true);
 
   try {
-    const response = await fetch("/api/forgot-password", {
+    const response = await fetch("https://beekeys-proxy.onrender.com/api/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_login: email }),
