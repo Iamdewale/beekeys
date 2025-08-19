@@ -5,7 +5,8 @@ import Footer from "../components/Footer";
 import { fetchStateDetails } from "../services/api";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css"; // ensure leaflet styles are loaded
+import "leaflet/dist/leaflet.css";
+import StateHero from "../components/StateHero";
 
 // Default Leaflet marker icons
 const DefaultIcon = new L.Icon({
@@ -16,7 +17,9 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const NoResults = ({ stateName }) => (
   <div className="text-gray-600 my-8 text-center">
-    <p className="mb-2 font-medium">No services currently listed for {stateName}.</p>
+    <p className="mb-2 font-medium">
+      No services currently listed for {stateName}.
+    </p>
     <p className="text-sm">Please check back later or try another state.</p>
   </div>
 );
@@ -53,8 +56,12 @@ export default function StateDetails() {
   const renderRegionInfo = () =>
     region && (
       <div className="mb-6 text-gray-700">
-        <p><strong>Region Name:</strong> {region.name}</p>
-        <p><strong>Slug:</strong> {region.slug}</p>
+        <p>
+          <strong>Region Name:</strong> {region.name}
+        </p>
+        <p>
+          <strong>Slug:</strong> {region.slug}
+        </p>
       </div>
     );
 
@@ -108,7 +115,11 @@ export default function StateDetails() {
               Lat: {item.lat}, Lng: {item.lng}
             </p>
             {item.icon && (
-              <img src={item.icon} alt={item.title} className="w-10 h-10 mt-2" />
+              <img
+                src={item.icon}
+                alt={item.title}
+                className="w-10 h-10 mt-2"
+              />
             )}
           </div>
         ))}
@@ -118,6 +129,11 @@ export default function StateDetails() {
   return (
     <main className="font-sans">
       <NavbarNG />
+      <HeroSection
+        title={`Explore Services in ${displayName}`}
+        subtitle={region?.name ? `Located in ${region.name} region` : ""}
+        backgroundUrl="..assets/images/statehero.jpg" // replace with your actual image path
+      />
       <section className="px-6 pt-32 py-16 max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/nigeria")}
