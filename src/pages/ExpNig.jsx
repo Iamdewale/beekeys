@@ -122,52 +122,42 @@ export default function ExpNig() {
       </section>
 
       {/* Nigerian States Section */}
-      <section className="py-12 px-4 pt-16 md:pt-20">
-        <h2 className="text-2xl md:text-3xl font-semibold text-center mb-8">
-          Explore Nigerian States
-        </h2>
+<section className="py-12 px-4 pt-16 md:pt-20">
+  <h2 className="text-2xl md:text-3xl font-semibold text-center mb-8">
+    Explore Nigerian States
+  </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {(showAllStates ? states : states.slice(0, 6)).map((state, index) => (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              {(showAllStates ? states : states.slice(0, 6)).map(
-                (state, index) => (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-  {(showAllStates ? states : states.slice(0, 6)).map((state, index) => (
-    <Link
-      key={index}
-      to={`/state/${state.slug}`}
-      className={`relative h-40 flex items-center justify-center text-white font-semibold text-center px-4 rounded-lg shadow-lg overflow-hidden transition-opacity duration-700 ${
-        loadedStates[state.slug] ? "opacity-100" : "opacity-0"
-      }`}
-      style={{
-        backgroundImage: `url(${state.thumbnail || "/fallback.jpg"})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <div className="absolute inset-0 bg-black/40" />
-      <span className="relative z-10">{state.title}</span>
-    </Link>
-  ))}
-</div>
-                )
-              )}
-            </div>
-          ))}
-        </div>
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+    {(showAllStates ? states : states.slice(0, 6)).map((state, index) => (
+      <Link
+        key={index}
+        to={`/state/${state.slug}`}
+        className={`relative h-40 flex items-center justify-center text-white font-semibold text-center px-4 rounded-lg shadow-lg overflow-hidden transition-opacity duration-700 ${
+          loadedStates[state.slug] ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          backgroundImage: `url(${state.thumbnail || "/fallback.jpg"})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+        <span className="relative z-10">{state.title}</span>
+      </Link>
+    ))}
+  </div>
 
-        {!showAllStates && (
-          <div className="text-center mt-8">
-            <button
-              onClick={() => setShowAllStates(true)}
-              className="bg-yellow-500 text-white px-6 py-2 rounded-full hover:bg-yellow-600 transition"
-            >
-              Explore More
-            </button>
-          </div>
-        )}
-      </section>
+  {!showAllStates && (
+    <div className="text-center mt-8">
+      <button
+        onClick={() => setShowAllStates(true)}
+        className="bg-yellow-500 text-white px-6 py-2 rounded-full hover:bg-yellow-600 transition"
+      >
+        Explore More
+      </button>
+    </div>
+  )}
+</section>
 
       <Footer />
     </main>
