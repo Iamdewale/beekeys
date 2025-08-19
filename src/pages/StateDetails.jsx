@@ -14,13 +14,6 @@ const DefaultIcon = new L.Icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const NoResults = ({ stateName }) => (
-  <div className="text-gray-600 my-8 text-center">
-    <p className="mb-2 font-medium">No services currently listed for {stateName}.</p>
-    <p className="text-sm">Please check back later or try another state.</p>
-  </div>
-);
-
 export default function StateDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -30,16 +23,18 @@ export default function StateDetails() {
   const [markers, setMarkers] = useState([]);
   const [error, setError] = useState("");
 
-  const displayName = useMemo(() => slug.replace(/-/g, " "), [slug]);
+  // Format slug for display
+  const displayName = useMemo(
+    () => slug.replace(/-/g, " "),
+    [slug]
+  );
 
   useEffect(() => {
     const loadDetails = async () => {
-      setLoading(true);
-      setError("");
       try {
         const data = await fetchStateDetails(slug);
         setRegion(data.region || null);
-        setMarkers(Array.isArray(data.markers) ? data.markers : []);
+        setMarkers(data.markers || []);
       } catch (err) {
         console.error(err);
         setError("Failed to load data for this state.");
@@ -50,49 +45,52 @@ export default function StateDetails() {
     loadDetails();
   }, [slug]);
 
-  const renderRegionInfo = () => (
-    <div className="mb-6 text-gray-700">
-      <p>
-        <strong>Region Name:</strong> {region?.name}
-      </p>
-      <p>
-        <strong>Slug:</strong> {region?.slug}
-      </p>
-    </div>
-  );
+  // --- Render helpers ---
+  const renderRegionInfo = () =>
+    region && (
+      <div className="mb-6 text-gray-700">
+        <p>
+          <strong>Region Name:</strong> {region.name}
+        </p>
+        <p>
+          <strong>Slug:</strong> {region.slug}
+        </p>
+      </div>
+    );
 
-  const renderMap = () => (
-    <div className="h-96 w-full mb-8 rounded-lg shadow overflow-hidden">
-      <MapContainer
-        center={[markers[0].lat, markers[0].lng]}
-        zoom={7}
-        className="h-full w-full"
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {markers.map((item) => (
-          <Marker
-            key={item.id}
-            position={[item.lat, item.lng]}
-            eventHandlers={{
-              click: () => navigate(`/business/${item.id}`),
-            }}
-          >
-            <Popup>
-              <div className="text-center">
-                <h3 className="font-semibold">{item.title}</h3>
-                <button
-                  onClick={() => navigate(`/business/${item.id}`)}
-                  className="mt-2 text-blue-600 hover:underline text-sm"
-                >
-                  View Details
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-    </div>
-  );
+  const renderMap = () =>
+    markers.length > 0 && (
+      <div className="h-96 w-full mb-8 rounded-lg shadow overflow-hidden">
+        <MapContainer
+          center={[markers[0].lat, markers[0].lng]}
+          zoom={7}
+          className="h-full w-full"
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          {markers.map((item) => (
+            <Marker
+              key={item.id}
+              position={[item.lat, item.lng]}
+              eventHandlers={{
+                click: () => navigate(`/business/${item.id}`),
+              }}
+            >
+              <Popup>
+                <div className="text-center">
+                  <h3 className="font-semibold">{item.title}</h3>
+                  <button
+                    onClick={() => navigate(`/business/${item.id}`)}
+                    className="mt-2 text-blue-600 hover:underline text-sm"
+                  >
+                    View Details
+                  </button>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
+    );
 
   const renderGrid = () => (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
@@ -120,10 +118,10 @@ export default function StateDetails() {
     </div>
   );
 
+  // --- Component render ---
   return (
     <main className="font-sans">
       <NavbarNG />
-      
 
       <section className="px-6 pt-32 py-16 max-w-6xl mx-auto">
         <button
@@ -140,18 +138,9 @@ export default function StateDetails() {
         {loading && <p className="text-gray-600">Loading services...</p>}
         {error && <p className="text-red-500">{error}</p>}
 
-        {region && renderRegionInfo()}
-
-        {!loading && !error && (
-          markers.length > 0 ? (
-            <>
-              {renderMap()}
-              {renderGrid()}
-            </>
-          ) : (
-            <NoResults stateName={displayName} />
-          )
-        )}
+        {renderRegionInfo()}
+        {renderMap()}
+        {renderGrid()}
       </section>
 
       <Footer />
