@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
@@ -12,6 +12,15 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
 
+  // Close modal with ESC key
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setShowModal(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -22,20 +31,14 @@ const LoginPage = () => {
         "https://app.beekeys.com/nigeria/wp-json/jwt-auth/v1/token",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: email,
-            password: password,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: email, password }),
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.message || "Login failed");
-        
         setShowModal(true);
         setLoading(false);
         return;
@@ -56,20 +59,24 @@ const LoginPage = () => {
     <main className="font-sans bg-white min-h-screen flex flex-col">
       <NavbarNG />
 
-      {/* ❗ Error Modal */}
+      {/* Error Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 animate-fadeIn">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full relative animate-scaleIn">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
             >
               ×
             </button>
-            <h2 className="text-xl font-semibold text-red-600 mb-2">Login Failed</h2>
+            <h2 className="text-xl font-semibold text-red-600 mb-2">
+              Login Failed
+            </h2>
             <div
               className="text-gray-700"
-              dangerouslySetInnerHTML={{ __html: error || "Invalid credentials" }}
+              dangerouslySetInnerHTML={{
+                __html: error || "Invalid credentials",
+              }}
             />
             <button
               onClick={() => setShowModal(false)}
@@ -81,8 +88,10 @@ const LoginPage = () => {
         </div>
       )}
 
+      {/* Main Content */}
       <div className="flex-grow pt-32 pb-24 flex items-center justify-center px-4">
         <div className="w-full max-w-md space-y-6">
+          {/* Header */}
           <div className="text-center">
             <h2 className="text-3xl font-semibold text-black">Welcome Back</h2>
             <p className="mt-2 text-sm text-gray-600">
@@ -93,7 +102,9 @@ const LoginPage = () => {
             </p>
           </div>
 
+          {/* Login Form */}
           <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* Email */}
             <div>
               <label
                 htmlFor="email"
@@ -107,11 +118,13 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email address"
-                className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-customGold focus:border-transparent"
+                className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-customGold focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 required
+                disabled={loading}
               />
             </div>
 
+            {/* Password */}
             <div>
               <label
                 htmlFor="password"
@@ -125,8 +138,9 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
-                className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-customGold focus:border-transparent"
+                className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-customGold focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 required
+                disabled={loading}
               />
               <div className="text-right mt-1">
                 <Link
@@ -138,11 +152,14 @@ const LoginPage = () => {
               </div>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
               className={`w-full ${
-                loading ? "bg-yellow-300" : "bg-customGold hover:bg-yellow-500"
+                loading
+                  ? "bg-yellow-300 cursor-not-allowed"
+                  : "bg-customGold hover:bg-yellow-500"
               } transition text-white font-semibold py-3 rounded-lg`}
             >
               {loading ? "Signing in..." : "Sign in"}
@@ -152,6 +169,24 @@ const LoginPage = () => {
       </div>
 
       <Footer />
+
+      {/* Animation styles */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from { transform: scale(0.95); opacity: 0; }
+          to   { transform: scale(1); opacity: 1; }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.2s ease-out;
+        }
+        .animate-scaleIn {
+          animation: scaleIn 0.2s ease-out;
+        }
+      `}</style>
     </main>
   );
 };
