@@ -130,6 +130,8 @@ export default function StateDetails() {
   title={`Explore Services in ${displayName}`}
   subtitle={region?.name ? `Located in ${region.name} region` : ""}
   backgroundUrl={stateHeroImg}
+  ctaText="← Back to States"
+  ctaOnClick={() => navigate("/nigeria")}
 />
 
      
