@@ -1,31 +1,23 @@
 // src/services/api.js
-import axios from "axios";
+import { buildNinjaFormsPayload } from "../utils/buildPayload";
 
 const BASE_URL = "https://beekeys-proxy.onrender.com";
 
 /**
  * Generic JSON fetch helper with consistent error handling.
- * @template T
- * @param {string} endpoint - API endpoint (relative to BASE_URL).
- * @param {string} [errorMsg="Request failed"] - Custom error message on failure.
- * @param {T} [fallback=null] - Value to return if request fails.
- * @returns {Promise<T>}
  */
 async function fetchJSON(endpoint, errorMsg = "Request failed", fallback = null) {
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`);
-
     let json;
     try {
       json = await res.json();
     } catch {
       throw new Error(`${errorMsg}: Invalid JSON`);
     }
-
     if (!res.ok) {
       throw new Error(json?.error || `${errorMsg} (status ${res.status})`);
     }
-
     return json;
   } catch (err) {
     console.error(`❌ ${errorMsg}:`, err.message);
@@ -35,8 +27,6 @@ async function fetchJSON(endpoint, errorMsg = "Request failed", fallback = null)
 
 /**
  * 🔎 Search businesses.
- * @param {string} query - Search term.
- * @returns {Promise<{success: boolean, results: any[]}>}
  */
 export async function searchBusinesses(query) {
   return fetchJSON(
@@ -48,8 +38,6 @@ export async function searchBusinesses(query) {
 
 /**
  * 📍 Get single business details by ID.
- * @param {number|string} id
- * @returns {Promise<object|null>}
  */
 export async function fetchBusinessDetails(id) {
   const data = await fetchJSON(
@@ -62,7 +50,6 @@ export async function fetchBusinessDetails(id) {
 
 /**
  * 🌍 Fetch all regions.
- * @returns {Promise<any[]>}
  */
 export async function fetchRegions() {
   const data = await fetchJSON(
@@ -74,9 +61,7 @@ export async function fetchRegions() {
 }
 
 /**
- * 📍 Get combined state details (region + markers) via proxy backend.
- * @param {string} slug
- * @returns {Promise<{region: object|null, markers: any[]}>}
+ * 📍 Get combined state details (region + markers).
  */
 export async function fetchStateDetails(slug) {
   const data = await fetchJSON(
@@ -84,18 +69,14 @@ export async function fetchStateDetails(slug) {
     `Failed to fetch state details for ${slug}`,
     { region: null, markers: [] }
   );
-
   return {
     region: data?.region || null,
     markers: Array.isArray(data?.markers) ? data.markers : []
   };
 }
 
-
 /**
  * 📝 Fetch dynamic form fields (from WP/Ninja backend).
- * @param {number} [formId=4]
- * @returns {Promise<any>}
  */
 export async function getFormFields(formId = 4) {
   return fetchJSON(
@@ -103,4 +84,60 @@ export async function getFormFields(formId = 4) {
     "Failed to fetch form fields",
     {}
   );
+}
+
+/**
+ * 📤 Upload a single file to Ninja Forms via proxy.
+ */
+export async function uploadNinjaFile(file) {
+  try {
+    const fileForm = new FormData();
+    fileForm.append("file", file);
+    const res = await fetch(`${BASE_URL}/upload-ninja`, {
+      method: "POST",
+      body: fileForm
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(json?.error || `Upload failed (status ${res.status})`);
+    }
+    return json;
+  } catch (err) {
+    console.error("❌ File upload failed:", err.message);
+    throw err;
+  }
+}
+
+/**
+ * 🚀 Submit a business listing via Ninja Forms proxy.
+ * Can accept either:
+ *  - a pre-built { form_id, fields } payload, OR
+ *  - raw friendly-keyed form data + uploadedFiles array (builds payload for you)
+ */
+export async function submitBusinessForm(formDataOrPayload, formId = 4, uploadedFiles = []) {
+  let payload;
+
+  // If it already looks like a built payload, use it directly
+  if (formDataOrPayload?.form_id && formDataOrPayload?.fields) {
+    payload = formDataOrPayload;
+  } else {
+    // Otherwise build it from friendly-keyed data
+    payload = buildNinjaFormsPayload(formId, formDataOrPayload, uploadedFiles);
+  }
+
+  try {
+    const res = await fetch(`${BASE_URL}/submit-ninja`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ formData: payload })
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(json?.error || `Form submission failed (status ${res.status})`);
+    }
+    return json;
+  } catch (err) {
+    console.error("❌ Form submission failed:", err.message);
+    throw err;
+  }
 }

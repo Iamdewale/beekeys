@@ -3,31 +3,31 @@ import { useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
 import { useFormData } from "../contexts/FormDataContext";
-import { getFormFields } from "../services/api"; // ✅ fetch fieldMap from proxy
+import { getFormFields, uploadNinjaFile, submitBusinessForm } from "../services/api"; 
 
 const BusinessListingStepFour = () => {
   const navigate = useNavigate();
   const { formData } = useFormData();
+
   const [showModal, setShowModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [fieldMap, setFieldMap] = useState(null);
 
-  // ✅ Fetch fieldMap from proxy when component mounts
+  // ✅ Fetch fieldMap once on mount
   useEffect(() => {
-    async function loadFields() {
+    if (fieldMap) return;
+    (async () => {
       try {
-        const res = await getFormFields(4); // 4 = Beekeys Listing Form
-        setFieldMap(res.fieldMap);
-      } catch (err) {
-        console.error("Failed to load field map", err);
+        const res = await getFormFields(4);
+        setFieldMap(res.fieldMap || {});
+      } catch {
         setErrorMessage("Could not load form fields.");
         setShowErrorModal(true);
       }
-    }
-    loadFields();
-  }, []);
+    })();
+  }, [fieldMap]);
 
   const handleBack = () => navigate(-1);
 
@@ -40,79 +40,28 @@ const BusinessListingStepFour = () => {
 
     setIsLoading(true);
     try {
-      // 1️⃣ Upload images
+      // 1️⃣ Upload any images first
       let uploadedFiles = [];
-      if (formData.images?.length > 0) {
-        for (const file of formData.images) {
-          const fileForm = new FormData();
-          fileForm.append("file", file);
-
-          const res = await fetch(
-            "https://beekeys-proxy.onrender.com/upload-ninja",
-            { method: "POST", body: fileForm }
-          );
-          const result = await res.json();
-          console.log("Upload result:", result);
-
-          if (!res.ok || !result.success || !result.wpResponse?.data?.tmp_name) {
-            throw new Error(result.error || "File upload failed");
-          }
-
-          uploadedFiles.push({
-            name: file.name,
-            tmp_name: result.wpResponse.data.tmp_name,
-            fieldID: fieldMap.imageupload, // ✅ use dynamic field ID
-          });
-        }
+      if (Array.isArray(formData.images) && formData.images.length > 0) {
+        uploadedFiles = await Promise.all(
+          formData.images.map(async (file) => {
+            const result = await uploadNinjaFile(file);
+            if (!result?.success || !result.wpResponse?.data?.tmp_name) {
+              throw new Error(result?.error || "File upload failed");
+            }
+            return { name: file.name, tmp_name: result.wpResponse.data.tmp_name };
+          })
+        );
       }
 
-      // 2️⃣ Build dynamic fields payload
-      const fields = {
-        [fieldMap.businessname]: { value: formData.businessName || "" },
-        [fieldMap.firstname]: { value: formData.firstName || "" },
-        [fieldMap.lastname]: { value: formData.lastName || "" },
-        [fieldMap.phone]: { value: formData.phone || "" },
-        [fieldMap.email]: { value: formData.email || "" },
-        [fieldMap.address]: { value: formData.address || "" },
-        [fieldMap.slogan]: { value: formData.slogan || "" },
-        [fieldMap.tags]: { value: formData.tags || "" },
-        [fieldMap.description]: { value: formData.description || "" },
-        [fieldMap.iscacregistered]: { value: formData.isCACRegistered ? "Yes" : "No" },
-        [fieldMap.hasbranches]: { value: formData.hasBranches ? "Yes" : "No" },
-        [fieldMap.website]: { value: formData.website || "" },
-        [fieldMap.imageupload]: { value: 1, files: uploadedFiles },
-      };
+      // 2️⃣ Just pass friendly‑keyed data & files to API helper
+      const data = await submitBusinessForm(formData, 4, uploadedFiles);
 
-      const formPayload = {
-        id: "4", // ✅ Beekeys Listing Form ID
-        fields,
-        settings: {
-          objectType: "Form Setting",
-          editActive: true,
-          title: "Beekeys Listing Form",
-        },
-      };
-
-      // 3️⃣ Submit via proxy
-      const response = await fetch(
-        "https://beekeys-proxy.onrender.com/submit-ninja",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ formData: formPayload }),
-        }
-      );
-
-      const data = await response.json();
-      console.log("Proxy Response:", data);
-
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.error || "Form submission failed");
       }
-
       setShowModal(true);
     } catch (err) {
-      console.error("Submission Error:", err);
       setErrorMessage(err.message);
       setShowErrorModal(true);
     } finally {
@@ -125,7 +74,7 @@ const BusinessListingStepFour = () => {
       <NavbarNG />
 
       <div className="flex-grow pt-32 pb-24 px-4 max-w-3xl mx-auto">
-        {/* Review Section */}
+        {/* Review */}
         <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 mb-8">
           <h2 className="text-lg font-semibold mb-4 text-gray-800">
             Review your submission
@@ -143,7 +92,7 @@ const BusinessListingStepFour = () => {
           </ul>
         </div>
 
-        {/* Buttons */}
+        {/* Actions */}
         <div className="pt-4 flex gap-4">
           <button
             type="button"
