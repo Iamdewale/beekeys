@@ -11,43 +11,44 @@ const ForgotPassword = () => {
 
   const validateEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-  const handleReset = async (e) => {
-    e.preventDefault();
-    setStatus("");
-    setMessage("");
+const handleReset = async (e) => {
+  e.preventDefault();
+  setStatus("");
+  setMessage("");
 
-    if (!email.trim() || !validateEmail(email)) {
+  if (!email.trim() || !validateEmail(email)) {
+    setStatus("error");
+    setMessage("Please enter a valid email address.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await fetch("/api/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_login: email }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
       setStatus("error");
-      setMessage("Please enter a valid email address.");
-      return;
+      setMessage(data?.message || data?.error || "Password reset failed.");
+    } else {
+      setStatus("success");
+      setMessage("✅ Check your email for password reset instructions.");
+      setEmail("");
     }
+  } catch {
+    setStatus("error");
+    setMessage("Something went wrong. Please try again later.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setLoading(true);
-
-    try {
-      const response = await fetch("/api/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_login: email }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setStatus("error");
-        setMessage(data.message || "Password reset failed.");
-        setEmail("");
-      } else {
-        setStatus("success");
-        setMessage("✅ Check your email for password reset instructions.");
-      }
-    } catch (err) {
-      setStatus("error");
-      setMessage("Something went wrong. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <main className="font-sans bg-white min-h-screen flex flex-col">
