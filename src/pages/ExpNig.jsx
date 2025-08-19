@@ -129,34 +129,29 @@ export default function ExpNig() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {(showAllStates ? states : states.slice(0, 6)).map((state, index) => (
-            <Link
-              key={index}
-              to={`/state/${state.slug}`}
-              className={`relative h-40 flex items-center justify-center text-white font-semibold text-center px-4 rounded-lg shadow-lg overflow-hidden transition-opacity duration-700 ${
-                loadedStates[state.slug] ? "opacity-100" : "opacity-0"
-              }`}
-              style={{
-                backgroundImage: `url(${state.thumbnail || "/fallback.jpg"})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              }}
-            >
-              <div className="absolute inset-0 bg-black/40" />
-              <span className="relative z-10">{state.title}</span>
-              {state.credit && (
-                <span className="absolute bottom-1 right-2 text-[10px] text-white/80 z-10">
-                  📷{" "}
-                  <a
-                    href={state.credit.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              {(showAllStates ? states : states.slice(0, 6)).map(
+                (state, index) => (
+                  <Link
+                    key={index}
+                    to={`/state/${state.slug}`}
+                    className={`relative h-40 flex items-center justify-center text-white font-semibold text-center px-4 rounded-lg shadow-lg overflow-hidden transition-opacity duration-700 ${
+                      loadedStates[state.slug] ? "opacity-100" : "opacity-0"
+                    }`}
+                    style={{
+                      backgroundImage: `url(${
+                        state.thumbnail || "/fallback.jpg"
+                      })`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
                   >
-                    {state.credit.name}
-                  </a>
-                </span>
+                    <div className="absolute inset-0 bg-black/40" />
+                    <span className="relative z-10">{state.title}</span>
+                  </Link>
+                )
               )}
-            </Link>
+            </div>
           ))}
         </div>
 
