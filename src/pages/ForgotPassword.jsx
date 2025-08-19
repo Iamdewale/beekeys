@@ -55,7 +55,7 @@ const handleReset = async (e) => {
       <NavbarNG />
 
       <div className="flex-grow pt-32 pb-24 flex items-center justify-center px-4">
-        <div className="w-full max-w-md space-y-6">
+        <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8 space-y-6">
           {/* Header */}
           <div className="text-center">
             <h2 className="text-3xl font-semibold text-black">
