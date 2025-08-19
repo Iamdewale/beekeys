@@ -124,7 +124,7 @@ export default function StateDetails() {
     <main className="font-sans">
       <NavbarNG />
 
-      {/* ✅ Hero section now wired up properly */}
+      {/* ✅ State hero now wired up properly */}
       <StateHero
         title={`Explore Services in ${displayName}`}
         subtitle={region?.name ? `Located in ${region.name} region` : ""}
