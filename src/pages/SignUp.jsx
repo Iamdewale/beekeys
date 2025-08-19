@@ -57,16 +57,16 @@ const SignUp = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            username,
-            email: form.email,
-            password: form.password,
+            user_login: username,
+            user_email: form.email,
+            user_pass: form.password,
             phone: form.phone,
           }),
         }
       );
 
       const data = await res.json();
-      if (!res.ok || !data.success) {
+      if (!res.ok || data.success === false) {
         throw new Error(data.message || "Registration failed. Please try again.");
       }
 
@@ -74,7 +74,7 @@ const SignUp = () => {
       if (token) {
         localStorage.setItem("token", token);
         setSuccessMsg("Registration successful! Redirecting...");
-        setTimeout(() => navigate("/dashboard"), 1500);
+        setTimeout(() => navigate("/select-role"), 1500); // 🔄 Updated redirect
       } else {
         setError("Registered, but could not auto-login.");
       }
@@ -91,7 +91,6 @@ const SignUp = () => {
 
       <div className="flex-grow pt-28 pb-24 flex items-center justify-center px-4">
         <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8 space-y-6">
-          {/* Header */}
           <div className="text-center">
             <h2 className="text-3xl font-semibold text-black">Register</h2>
             <p className="mt-2 text-sm text-gray-600">
@@ -102,17 +101,13 @@ const SignUp = () => {
             </p>
           </div>
 
-          {/* Form */}
           <form className="space-y-4" onSubmit={handleSubmit}>
             {error && <p className="text-red-500">{error}</p>}
             {successMsg && <p className="text-green-600">{successMsg}</p>}
 
             {/* Email */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-semibold text-gray-800"
-              >
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-800">
                 Email Address
               </label>
               <input
@@ -129,10 +124,7 @@ const SignUp = () => {
 
             {/* Phone */}
             <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-semibold text-gray-800"
-              >
+              <label htmlFor="phone" className="block text-sm font-semibold text-gray-800">
                 Phone Number
               </label>
               <input
@@ -149,10 +141,7 @@ const SignUp = () => {
 
             {/* Password */}
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-semibold text-gray-800"
-              >
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-800">
                 Password
               </label>
               <div className="relative">
@@ -181,10 +170,7 @@ const SignUp = () => {
 
             {/* Confirm Password */}
             <div>
-              <label
-                htmlFor="confirmPassword"
-                className="block text-sm font-semibold text-gray-800"
-              >
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-800">
                 Confirm Password
               </label>
               <div className="relative">
@@ -233,7 +219,6 @@ const SignUp = () => {
               </label>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={!isFormValid || loading}
