@@ -8,6 +8,10 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+import StateHero from "../components/StateHero";
+import stateHeroImg from "../assets/images/statehero.jpg"; // adjust path if needed
+
+
 // Default Leaflet marker icon
 const DefaultIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -121,6 +125,12 @@ export default function StateDetails() {
   return (
     <main className="font-sans">
       <NavbarNG />
+
+      <StateHero
+  title={`Explore Services in ${displayName}`}
+  subtitle={region?.name ? `Located in ${region.name} region` : ""}
+  backgroundUrl={stateHeroImg}
+/>
 
      
       <section className="px-6 pt-16 pb-16 max-w-6xl mx-auto">
