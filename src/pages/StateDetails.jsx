@@ -11,7 +11,6 @@ import "leaflet/dist/leaflet.css";
 import StateHero from "../components/StateHero";
 import stateHeroImg from "../assets/images/statehero.jpg"; // adjust path if needed
 
-
 // Default Leaflet marker icon
 const DefaultIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
@@ -60,8 +59,12 @@ export default function StateDetails() {
   const renderRegionInfo = () =>
     region && (
       <div className="mb-6 text-gray-700">
-        <p><strong>Region Name:</strong> {region.name}</p>
-        <p><strong>Slug:</strong> {region.slug}</p>
+        <p>
+          <strong>Region Name:</strong> {region.name}
+        </p>
+        <p>
+          <strong>Slug:</strong> {region.slug}
+        </p>
       </div>
     );
 
@@ -115,7 +118,11 @@ export default function StateDetails() {
               Lat: {item.lat}, Lng: {item.lng}
             </p>
             {item.icon && (
-              <img src={item.icon} alt={item.title} className="w-10 h-10 mt-2" />
+              <img
+                src={item.icon}
+                alt={item.title}
+                className="w-10 h-10 mt-2"
+              />
             )}
           </div>
         ))}
@@ -125,18 +132,18 @@ export default function StateDetails() {
   return (
     <main className="font-sans">
       <NavbarNG />
-
       <StateHero
-  title={`Explore Services in ${displayName}`}
-  subtitle={region?.name ? `Located in ${region.name} region` : ""}
-  backgroundUrl={stateHeroImg}
-  ctaText="← Back to States"
-  ctaOnClick={() => navigate("/nigeria")}
-/>
+        title={`Explore Services in ${displayName}`}
+        subtitle={region?.name ? `Located in ${region.name} region` : ""}
+        backgroundUrl={stateHeroImg}
+        ctaText="← Back to States"
+        ctaOnClick={() => navigate("/nigeria")}
+        onSearch={(query) =>
+          navigate(`/search?query=${encodeURIComponent(query)}&state=${slug}`)
+        }
+      />
 
-     
       <section className="px-6 pt-16 pb-16 max-w-6xl mx-auto">
-
         <button
           onClick={() => navigate("/nigeria")}
           className="mb-4 text-yellow-600 hover:underline"
