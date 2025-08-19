@@ -7,8 +7,6 @@ import { fetchStateDetails } from "../services/api";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import StateHero from "../components/StateHero";  // ✅ correct import
-import stateHeroImg from "../assets/images/statehero.jpg"; // ✅ adjust path if needed
 
 // Default Leaflet marker icon
 const DefaultIcon = new L.Icon({
@@ -126,13 +124,6 @@ export default function StateDetails() {
 
      
       <section className="px-6 pt-16 pb-16 max-w-6xl mx-auto">
-
-         {/* ✅ State hero now wired up properly */}
-      <StateHero
-        title={`Explore Services in ${displayName}`}
-        subtitle={region?.name ? `Located in ${region.name} region` : ""}
-        backgroundUrl={stateHeroImg}
-      />
 
         <button
           onClick={() => navigate("/nigeria")}
