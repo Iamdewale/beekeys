@@ -10,19 +10,29 @@ export default function ExpNig() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAllStates, setShowAllStates] = useState(false);
   const [states, setStates] = useState([]);
+  const [loadedStates, setLoadedStates] = useState({}); // track which states have loaded
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadRegions = async () => {
       const regions = await fetchRegions();
 
-      // Extract only valid states
       const validStates = regions
-        .filter(region => region?.title && region?.slug)
-        .map(region => ({
+        .filter((region) => region?.title && region?.slug)
+        .map((region) => ({
           title: region.title,
           slug: region.slug,
+          thumbnail: region.thumbnail || null,
+          credit: region.credit || null,
         }));
+
+      // preload thumbnails
+      validStates.forEach((state) => {
+        const img = new Image();
+        img.src = state.thumbnail || "/fallback.jpg";
+        img.onload = () =>
+          setLoadedStates((prev) => ({ ...prev, [state.slug]: true }));
+      });
 
       setStates(validStates);
     };
@@ -37,9 +47,7 @@ export default function ExpNig() {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+    if (e.key === "Enter") handleSearch();
   };
 
   return (
@@ -124,9 +132,30 @@ export default function ExpNig() {
             <Link
               key={index}
               to={`/state/${state.slug}`}
-              className="bg-gray-300 h-40 flex items-center justify-center text-gray-600 font-semibold hover:bg-yellow-400 transition text-center px-4"
+              className={`relative h-40 flex items-center justify-center text-white font-semibold text-center px-4 rounded-lg shadow-lg overflow-hidden transition-opacity duration-700 ${
+                loadedStates[state.slug] ? "opacity-100" : "opacity-0"
+              }`}
+              style={{
+                backgroundImage: `url(${state.thumbnail || "/fallback.jpg"})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
             >
-              {state.title}
+              <div className="absolute inset-0 bg-black/40" />
+              <span className="relative z-10">{state.title}</span>
+              {state.credit && (
+                <span className="absolute bottom-1 right-2 text-[10px] text-white/80 z-10">
+                  📷{" "}
+                  <a
+                    href={state.credit.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    {state.credit.name}
+                  </a>
+                </span>
+              )}
             </Link>
           ))}
         </div>
