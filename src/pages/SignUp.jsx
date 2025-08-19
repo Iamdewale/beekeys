@@ -15,6 +15,8 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -26,81 +28,69 @@ const SignUp = () => {
     }));
   };
 
+  const isFormValid =
+    form.email &&
+    form.phone &&
+    form.password &&
+    form.confirmPassword &&
+    form.password === form.confirmPassword &&
+    form.agreeTerms;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccessMsg("");
 
-    const { email, phone, password, confirmPassword, agreeTerms } = form;
-
-    if (!email || !phone || !password || !confirmPassword) {
-      return setError("Please fill all the fields.");
+    if (!isFormValid) {
+      return setError("Please complete the form correctly.");
     }
 
-    if (password !== confirmPassword) {
-      return setError("Passwords do not match.");
-    }
-
-    if (!agreeTerms) {
-      return setError("You must agree to the Terms and Conditions.");
-    }
-
-    const username = email.split("@")[0] + Math.floor(Math.random() * 10000);
-
+    const username = `${form.email.split("@")[0]}${Math.floor(
+      Math.random() * 10000
+    )}`;
     setLoading(true);
 
     try {
-      const response = await fetch(
+      const res = await fetch(
         "https://app.beekeys.com/wp-json/userswp/v1/register",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             username,
-            email,
-            password,
-            phone,
+            email: form.email,
+            password: form.password,
+            phone: form.phone,
           }),
         }
       );
 
-      const data = await response.json();
-      console.log("Signup response:", data); // 🔍 Log the response for debugging
-
-      if (!response.ok || !data.success) {
-        return setError(
-          data.message || "Registration failed. Please try again."
-        );
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Registration failed. Please try again.");
       }
 
-      // ✅ Check token in data.data.token
       const token = data?.data?.token;
       if (token) {
         localStorage.setItem("token", token);
-        setSuccessMsg("Registration successful! Logging you in...");
-
-        setTimeout(() => {
-          navigate("/dashboard"); // redirect to your main page
-        }, 1500);
+        setSuccessMsg("Registration successful! Redirecting...");
+        setTimeout(() => navigate("/dashboard"), 1500);
       } else {
-        setError(data.message || "Registered, but could not auto-login.");
+        setError("Registered, but could not auto-login.");
       }
     } catch (err) {
-      console.error(err);
-      setError("Something went wrong. Please try again later.");
+      setError(err.message || "Something went wrong. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="font-sans bg-white min-h-screen flex flex-col">
+    <main className="font-sans bg-gray-50 min-h-screen flex flex-col">
       <NavbarNG />
 
-      <div className="flex-grow pt-32 pb-24 flex items-center justify-center px-4">
-        <div className="w-full max-w-md space-y-6">
+      <div className="flex-grow pt-28 pb-24 flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8 space-y-6">
           {/* Header */}
           <div className="text-center">
             <h2 className="text-3xl font-semibold text-black">Register</h2>
@@ -165,16 +155,28 @@ const SignUp = () => {
               >
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                placeholder="Enter password"
-                className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-customGold"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="Enter password"
+                  className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-customGold pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+              <small className="text-gray-500">
+                At least 8 characters, 1 uppercase, 1 number
+              </small>
             </div>
 
             {/* Confirm Password */}
@@ -185,16 +187,32 @@ const SignUp = () => {
               >
                 Confirm Password
               </label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                placeholder="Re-enter password"
-                className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-customGold"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Re-enter password"
+                  className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-customGold pr-10"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
+                >
+                  {showConfirmPassword ? "Hide" : "Show"}
+                </button>
+              </div>
+              {form.password &&
+                form.confirmPassword &&
+                form.password !== form.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1">
+                    Passwords do not match
+                  </p>
+                )}
             </div>
 
             {/* Terms */}
@@ -218,7 +236,7 @@ const SignUp = () => {
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={!isFormValid || loading}
               className="w-full bg-customGold hover:bg-yellow-500 transition text-white font-semibold py-3 rounded-lg disabled:opacity-50"
             >
               {loading ? "Creating Account..." : "Create Account"}
