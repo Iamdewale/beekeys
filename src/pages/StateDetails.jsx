@@ -124,14 +124,16 @@ export default function StateDetails() {
     <main className="font-sans">
       <NavbarNG />
 
-      {/* ✅ State hero now wired up properly */}
+     
+      <section className="px-6 pt-16 pb-16 max-w-6xl mx-auto">
+
+         {/* ✅ State hero now wired up properly */}
       <StateHero
         title={`Explore Services in ${displayName}`}
         subtitle={region?.name ? `Located in ${region.name} region` : ""}
         backgroundUrl={stateHeroImg}
       />
 
-      <section className="px-6 pt-16 pb-16 max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/nigeria")}
           className="mb-4 text-yellow-600 hover:underline"
