@@ -6,7 +6,10 @@ import { fetchStateDetails } from "../services/api";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import HeroSection from "../components/HeroSection"; // Updated import
+
+import StateHero from "../components/StateHero";
+import stateHeroImg from "../assets/images/statehero.jpg";
+
 
 // Default Leaflet marker icons
 const DefaultIcon = new L.Icon({
@@ -129,11 +132,13 @@ export default function StateDetails() {
   return (
     <main className="font-sans">
       <NavbarNG />
-      <HeroSection
-        title={`Explore Services in ${displayName}`}
-        subtitle={region?.name ? `Located in ${region.name} region` : ""}
-        backgroundUrl="../assets/images/statehero.jpg" // replace with your actual image path
-      />
+
+      <StateHero
+    title={`Explore Services in ${displayName}`}
+    subtitle={region?.name ? `Located in ${region.name} region` : ""}
+    backgroundUrl={stateHeroImg} // or public path
+  />
+      
       <section className="px-6 pt-32 py-16 max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/nigeria")}
