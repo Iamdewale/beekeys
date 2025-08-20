@@ -74,6 +74,7 @@ export const fetchStateDetails = async (slug) => {
 /**
  * 📤 Submit business form.
  */
+
 export const submitBusinessForm = async (formData, uploadedFiles = []) => {
   const payload = { ...formData, uploadedFiles };
 
