@@ -1,23 +1,25 @@
-import { buildNinjaFormsPayload } from "../utils/buildPayload";
-
 const BASE_URL = "https://beekeys-proxy.onrender.com";
 
 /**
- * Generic JSON fetch helper with consistent error handling.
+ * 🛠 Generic JSON fetch helper with consistent error handling.
  */
 async function fetchJSON(endpoint, errorMsg = "Request failed", fallback = null) {
   try {
     const res = await fetch(`${BASE_URL}${endpoint}`);
-    let json;
+    const text = await res.text();
+
+    let data = {};
     try {
-      json = await res.json();
+      data = text ? JSON.parse(text) : {};
     } catch {
       throw new Error(`${errorMsg}: Invalid JSON`);
     }
+
     if (!res.ok) {
-      throw new Error(json?.error || `${errorMsg} (status ${res.status})`);
+      throw new Error(data?.error || `${errorMsg} (status ${res.status})`);
     }
-    return json;
+
+    return data;
   } catch (err) {
     console.error(`❌ ${errorMsg}:`, err.message);
     return fallback;
@@ -27,91 +29,53 @@ async function fetchJSON(endpoint, errorMsg = "Request failed", fallback = null)
 /**
  * 🔎 Search businesses.
  */
-export async function searchBusinesses(query) {
-  return fetchJSON(
+export const searchBusinesses = async (query) =>
+  fetchJSON(
     `/api/businesses?search=${encodeURIComponent(query)}`,
     "Failed to fetch business search results",
     { success: false, results: [] }
   );
-}
 
 /**
  * 📍 Get single business details by ID.
  */
-export async function fetchBusinessDetails(id) {
+export const fetchBusinessDetails = async (id) => {
   const data = await fetchJSON(
     `/api/business/${id}`,
     "Failed to fetch business details",
     { business: null }
   );
-  return data?.business || null;
-}
+  return data.business;
+};
 
 /**
  * 🌍 Fetch all regions.
  */
-export async function fetchRegions() {
-  const data = await fetchJSON(
-    "/api/regions",
-    "Failed to fetch regions",
-    { data: [] }
-  );
-  return Array.isArray(data?.data) ? data.data : [];
-}
+export const fetchRegions = async () => {
+  const data = await fetchJSON("/api/regions", "Failed to fetch regions", { data: [] });
+  return Array.isArray(data.data) ? data.data : [];
+};
 
 /**
- * 📍 Get combined state details (region + markers).
+ * 🗺️ Get combined state details (region + markers).
  */
-export async function fetchStateDetails(slug) {
+export const fetchStateDetails = async (slug) => {
   const data = await fetchJSON(
     `/api/state-details/${encodeURIComponent(slug)}`,
     `Failed to fetch state details for ${slug}`,
     { region: null, markers: [] }
   );
   return {
-    region: data?.region || null,
-    markers: Array.isArray(data?.markers) ? data.markers : []
+    region: data.region,
+    markers: Array.isArray(data.markers) ? data.markers : []
   };
-}
+};
 
 /**
- * 📝 Fetch dynamic form fields (from WP/Ninja backend).
+ * 📤 Submit business form.
  */
-export async function getFormFields(formId = 4) {
-  return fetchJSON(
-    `/form-fields/${formId}`,
-    "Failed to fetch form fields",
-    {}
-  );
-}
-
-/**
- * 📤 Upload a single file to Ninja Forms via proxy.
- */
-export async function uploadNinjaFile(file) {
-  try {
-    const fileForm = new FormData();
-    fileForm.append("file", file);
-    const res = await fetch(`${BASE_URL}/upload-ninja`, {
-      method: "POST",
-      body: fileForm
-    });
-    const json = await res.json();
-    if (!res.ok) {
-      throw new Error(json?.error || `Upload failed (status ${res.status})`);
-    }
-    return json;
-  } catch (err) {
-    console.error("❌ File upload failed:", err.message);
-    throw err;
-  }
-}
-
-export async function submitBusinessForm(formData, uploadedFiles = []) {
-  const payload = {
-    ...formData,
-    uploadedFiles, // Include files if needed
-  };
+export const submitBusinessForm = async (formData, uploadedFiles = []) => {
+  const payload = { ...formData, uploadedFiles };
 
   try {
     const res = await fetch("/submit-business", {
@@ -128,8 +92,8 @@ export async function submitBusinessForm(formData, uploadedFiles = []) {
 
     try {
       data = text ? JSON.parse(text) : {};
-    } catch (parseErr) {
-      console.warn("⚠️ Failed to parse JSON:", parseErr);
+    } catch (err) {
+      console.warn("⚠️ Failed to parse JSON:", err);
     }
 
     if (!res.ok) {
@@ -141,5 +105,4 @@ export async function submitBusinessForm(formData, uploadedFiles = []) {
     console.error("❌ submitBusinessForm error:", err);
     return { success: false, error: err.message };
   }
-}
-
+};

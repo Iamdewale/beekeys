@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import NavbarNG from "../../components/NavbarNG";
 import Footer from "../../components/Footer";
 
 import { useFormData } from "../../contexts/FormDataContext";
-import { getFormFields, uploadNinjaFile, submitBusinessForm } from "../../services/api";
+import { submitBusinessForm } from "../../services/api";
 
 import useValidation from "../../hooks/useValidation";
 import { stepValidationRules } from "../../validationRules";
@@ -15,21 +15,8 @@ const StepFour = () => {
   const { formData } = useFormData();
   const { errors, validate } = useValidation(stepValidationRules[4]);
 
-  const [fieldMap, setFieldMap] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [modal, setModal] = useState({ type: null, message: "" });
-
-  useEffect(() => {
-    if (fieldMap) return;
-    (async () => {
-      try {
-        const res = await getFormFields(4);
-        setFieldMap(res.fieldMap || {});
-      } catch {
-        setModal({ type: "error", message: "Could not load form fields." });
-      }
-    })();
-  }, [fieldMap]);
 
   const handleBack = () => navigate(-1);
 
@@ -37,24 +24,9 @@ const StepFour = () => {
     const validationErrors = validate(formData);
     if (Object.keys(validationErrors).length > 0) return;
 
-    if (!fieldMap) {
-      setModal({ type: "error", message: "Form fields not loaded." });
-      return;
-    }
-
     setIsLoading(true);
     try {
-      const uploadedFiles = await Promise.all(
-        (formData.images || []).map(async (file) => {
-          const result = await uploadNinjaFile(file);
-          if (!result?.success || !result.wpResponse?.data?.tmp_name) {
-            throw new Error(result?.error || "File upload failed");
-          }
-          return { name: file.name, tmp_name: result.wpResponse.data.tmp_name };
-        })
-      );
-
-      const response = await submitBusinessForm(formData, 4, uploadedFiles);
+      const response = await submitBusinessForm(formData);
       if (!response.success) {
         throw new Error(response.error || "Form submission failed");
       }
