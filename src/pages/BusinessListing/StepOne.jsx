@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavbarNG from "../components/NavbarNG";
-import Footer from "../components/Footer";
-import { FiUploadCloud } from "react-icons/fi";
-import { useFormData } from "../contexts/FormDataContext";
-import useValidation from "../hooks/useValidation";
+
+import NavbarNG from "../../components/NavbarNG";
+import Footer from "../../components/Footer";
+
+import { useFormData } from "../../contexts/FormDataContext";
+import useValidation from "../../hooks/useValidation";
 import { stepValidationRules } from "../../validationRules";
 
+import { FiUploadCloud } from "react-icons/fi";
 const StepOne = () => {
   const navigate = useNavigate();
   const { formData, setFormData } = useFormData();
