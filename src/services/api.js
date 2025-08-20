@@ -106,18 +106,15 @@ export async function uploadNinjaFile(file) {
     throw err;
   }
 }
-export async function submitBusinessForm(formDataOrPayload, formId = 4, uploadedFiles = []) {
-  let payload;
 
-  // Use pre-built payload if available
-  if (formDataOrPayload?.form_id && formDataOrPayload?.fields) {
-    payload = formDataOrPayload;
-  } else {
-    payload = buildNinjaFormsPayload(formId, formDataOrPayload, uploadedFiles);
-  }
+export async function submitBusinessForm(formData, uploadedFiles = []) {
+  const payload = {
+    ...formData,
+    uploadedFiles, // Include files if needed
+  };
 
   try {
-    const res = await fetch("https://beekeys-home.vercel.app/submit-ninja", {
+    const res = await fetch("/submit-business", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -126,7 +123,7 @@ export async function submitBusinessForm(formDataOrPayload, formId = 4, uploaded
       body: JSON.stringify(payload)
     });
 
-    const text = await res.text(); // safer than res.json()
+    const text = await res.text();
     let data = {};
 
     try {
@@ -145,3 +142,4 @@ export async function submitBusinessForm(formDataOrPayload, formId = 4, uploaded
     return { success: false, error: err.message };
   }
 }
+
