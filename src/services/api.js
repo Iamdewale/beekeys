@@ -82,7 +82,7 @@ export const submitBusinessForm = async (formData, uploadedFiles = []) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-Proxy-Secret": process.env.REACT_APP_PROXY_SECRET
+        "X-Proxy-Secret": process.env.PROXY_SECRET
       },
       body: JSON.stringify(payload)
     });
