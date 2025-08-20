@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavbarNG from "../components/NavbarNG";
-import Footer from "../components/Footer";
+import NavbarNG from "../../components/NavbarNG";
+import Footer from "../../components/Footer";
 
-const ContributorFormStepOne = () => {
+const StepOne = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -311,4 +311,4 @@ const ContributorFormStepOne = () => {
   );
 };
 
-export default ContributorFormStepOne;
+export default StepOne;

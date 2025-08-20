@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import NavbarNG from "../components/NavbarNG";
-import Footer from "../components/Footer";
+import NavbarNG from "../../components/NavbarNG";
+import Footer from "../../components/Footer";
 import { useNavigate } from "react-router-dom";
 
-const ContributorFormStepThree = () => {
+const StepThree = () => {
   const navigate = useNavigate();
   const [agreement, setAgreement] = useState(false);
   const [fullName, setFullName] = useState("");
@@ -117,4 +117,4 @@ const ContributorFormStepThree = () => {
   );
 };
 
-export default ContributorFormStepThree;
+export default StepThree;

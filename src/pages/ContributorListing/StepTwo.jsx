@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import NavbarNG from "../components/NavbarNG";
-import Footer from "../components/Footer";
+import NavbarNG from "../../components/NavbarNG";
+import Footer from "../../components/Footer";
 import { FiUploadCloud } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 
-const ContributorFormStepTwo = () => {
+const StepTwo = () => {
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [description, setDescription] = useState("");
@@ -128,4 +128,4 @@ const ContributorFormStepTwo = () => {
   );
 };
 
-export default ContributorFormStepTwo;
+export default StepTwo;

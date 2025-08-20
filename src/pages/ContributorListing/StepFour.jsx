@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import NavbarNG from "../components/NavbarNG";
-import Footer from "../components/Footer";
+import NavbarNG from "../../components/NavbarNG";
+import Footer from "../../components/Footer";
 import { useNavigate } from "react-router-dom";
 
-const ContributorFormStepFour = () => {
+const StepFour = () => {
   const navigate = useNavigate();
 
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -186,4 +186,4 @@ const handleSubmit = async () => {
   );
 };
 
-export default ContributorFormStepFour;
+export default StepFour;
