@@ -15,7 +15,7 @@ const RoleSelector = () => {
       title: "List Business",
       description: "Represent your brand in a simple effective way",
       icon: <FaStore className="text-xl" />,
-      route: "/listing-step-1",
+      route: "/listing",
     },
     {
       key: "contributor",
@@ -23,7 +23,7 @@ const RoleSelector = () => {
       description:
         "Empower yourself to enhance the accuracy and richness of our business directory platform",
       icon: <FaUser className="text-xl" />,
-      route: "/contributor-step-1",
+      route: "/contributor",
     },
   ];
 
