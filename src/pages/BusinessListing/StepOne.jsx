@@ -25,7 +25,7 @@ const StepOne = () => {
     e.preventDefault();
     const errs = validate(formData);
     if (Object.keys(errs).length === 0) {
-      navigate("listing/step-2");
+      navigate("/listing/step-2");
     }
   };
 
