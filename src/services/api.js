@@ -106,26 +106,18 @@ export async function uploadNinjaFile(file) {
     throw err;
   }
 }
-
-/**
- * 🚀 Submit a business listing via secure proxy.
- * Can accept either:
- *  - a pre-built { form_id, fields } payload, OR
- *  - raw friendly-keyed form data + uploadedFiles array (builds payload for you)
- */
 export async function submitBusinessForm(formDataOrPayload, formId = 4, uploadedFiles = []) {
   let payload;
 
-  // If it already looks like a built payload, use it directly
+  // Use pre-built payload if available
   if (formDataOrPayload?.form_id && formDataOrPayload?.fields) {
     payload = formDataOrPayload;
   } else {
-    // Otherwise build it from friendly-keyed data
     payload = buildNinjaFormsPayload(formId, formDataOrPayload, uploadedFiles);
   }
 
   try {
-    const res = await fetch("/secure-submit", {
+    const res = await fetch("https://beekeys-home.vercel.app/submit-ninja", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -134,10 +126,19 @@ export async function submitBusinessForm(formDataOrPayload, formId = 4, uploaded
       body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
+    const text = await res.text(); // safer than res.json()
+    let data = {};
+
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch (parseErr) {
+      console.warn("⚠️ Failed to parse JSON:", parseErr);
+    }
+
     if (!res.ok) {
       throw new Error(data?.error || `Form submission failed (status ${res.status})`);
     }
+
     return data;
   } catch (err) {
     console.error("❌ submitBusinessForm error:", err);
