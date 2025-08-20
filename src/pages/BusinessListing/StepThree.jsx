@@ -19,7 +19,7 @@ const StepThree = () => {
     e.preventDefault();
     const newErrors = validate(formData);
     if (Object.keys(newErrors).length === 0) {
-      navigate("/listing-step-4");
+      navigate("/step-4");
     }
   };
 
