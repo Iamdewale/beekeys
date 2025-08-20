@@ -78,7 +78,7 @@ export const submitBusinessForm = async (formData, uploadedFiles = []) => {
   const payload = { ...formData, uploadedFiles };
 
   try {
-    const res = await fetch("/submit-business", {
+    const res = await fetch(`${BASE_URL}/submit-business`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
