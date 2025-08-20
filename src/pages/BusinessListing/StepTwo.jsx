@@ -14,13 +14,13 @@ const StepTwo = () => {
   const { formData, setFormData } = useFormData();
   const { errors, validate } = useValidation(stepValidationRules[2]);
 
-  const handleBack = () => navigate("/step-1");
+  const handleBack = () => navigate("listing/step-1");
 
   const handleNext = (e) => {
     e.preventDefault();
     const newErrors = validate(formData);
     if (Object.keys(newErrors).length === 0) {
-      navigate("/step-3");
+      navigate("listing/step-3");
     }
   };
 
