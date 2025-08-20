@@ -15,7 +15,7 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import RoleSelector from "./pages/RoleSelector";
 import BusinessDetails from "./pages/BusinessDetails";
-
+import NotFound from "./pages/NotFound";
 
 import BusinessListingRoutes from "./routes/BusinessListingRoutes";
 import ContributorsRoutes from "./routes/ContributorsRoutes.jsx";
@@ -42,7 +42,9 @@ export default function App() {
         {/* Multi-step forms */}
         <Route path="/listing/*" element={<BusinessListingRoutes />} />
         <Route path="/contributor/*" element={<ContributorsRoutes />} />
-        
+
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
