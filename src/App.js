@@ -42,9 +42,7 @@ export default function App() {
         {/* Multi-step forms */}
         <Route path="/listing/*" element={<BusinessListingRoutes />} />
         <Route path="/contributor/*" element={<ContributorsRoutes />} />
-
-        {/* 404
-        <Route path="*" element={<NotFound />} /> */}
+        
       </Routes>
     </Router>
   );
