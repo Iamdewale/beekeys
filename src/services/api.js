@@ -1,4 +1,3 @@
-// src/services/api.js
 import { buildNinjaFormsPayload } from "../utils/buildPayload";
 
 const BASE_URL = "https://beekeys-proxy.onrender.com";
@@ -109,7 +108,7 @@ export async function uploadNinjaFile(file) {
 }
 
 /**
- * 🚀 Submit a business listing via Ninja Forms proxy.
+ * 🚀 Submit a business listing via secure proxy.
  * Can accept either:
  *  - a pre-built { form_id, fields } payload, OR
  *  - raw friendly-keyed form data + uploadedFiles array (builds payload for you)
@@ -126,18 +125,22 @@ export async function submitBusinessForm(formDataOrPayload, formId = 4, uploaded
   }
 
   try {
-    const res = await fetch(`${BASE_URL}/submit-ninja`, {
+    const res = await fetch("/secure-submit", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ formData: payload })
+      headers: {
+        "Content-Type": "application/json",
+        "X-Proxy-Secret": process.env.REACT_APP_PROXY_SECRET
+      },
+      body: JSON.stringify(payload)
     });
-    const json = await res.json();
+
+    const data = await res.json();
     if (!res.ok) {
-      throw new Error(json?.error || `Form submission failed (status ${res.status})`);
+      throw new Error(data?.error || `Form submission failed (status ${res.status})`);
     }
-    return json;
+    return data;
   } catch (err) {
-    console.error("❌ Form submission failed:", err.message);
-    throw err;
+    console.error("❌ submitBusinessForm error:", err);
+    return { success: false, error: err.message };
   }
 }
