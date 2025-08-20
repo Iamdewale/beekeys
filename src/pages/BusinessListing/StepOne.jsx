@@ -5,7 +5,7 @@ import Footer from "../components/Footer";
 import { FiUploadCloud } from "react-icons/fi";
 import { useFormData } from "../contexts/FormDataContext";
 import useValidation from "../hooks/useValidation";
-import { stepValidationRules } from "../validationRules";
+import { stepValidationRules } from "../../validationRules";
 
 const StepOne = () => {
   const navigate = useNavigate();
