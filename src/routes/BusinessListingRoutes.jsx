@@ -7,11 +7,14 @@ import StepTwo from "../pages/BusinessListing/StepTwo";
 import StepThree from "../pages/BusinessListing/StepThree";
 import StepFour from "../pages/BusinessListing/StepFour";
 
+import { Navigate } from "react-router-dom";
+
 
 export default function BusinessListingRoutes() {
   return (
     <FormDataProvider>
       <Routes>
+        <Route index element={<Navigate to="step-1" replace />} />
         <Route path="step-1" element={<StepOne />} />
         <Route path="step-2" element={<StepTwo />} />
         <Route path="step-3" element={<StepThree />} />

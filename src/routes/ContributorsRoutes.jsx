@@ -7,10 +7,13 @@ import StepTwo from "../pages/ContributorListing/StepTwo";
 import StepThree from "../pages/ContributorListing/StepThree";
 import StepFour from "../pages/ContributorListing/StepFour";
 
+import { Navigate } from "react-router-dom";
+
 export default function ContributorsRoutes() {
   return (
     <FormDataProvider>
       <Routes>
+        <Route index element={<Navigate to="step-1" replace />} />
         <Route path="step-1" element={<StepOne />} />
         <Route path="step-2" element={<StepTwo />} />
         <Route path="step-3" element={<StepThree />} />
