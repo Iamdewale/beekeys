@@ -13,13 +13,11 @@ import { stepValidationRules } from "../../validationRules";
 const StepFour = () => {
   const navigate = useNavigate();
   const { formData } = useFormData();
-  const { errors, validate, setErrors } = useValidation(stepValidationRules[4]);
+  const { errors, validate } = useValidation(stepValidationRules[4]);
 
-  const [showModal, setShowModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [fieldMap, setFieldMap] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [modal, setModal] = useState({ type: null, message: "" });
 
   useEffect(() => {
     if (fieldMap) return;
@@ -28,8 +26,7 @@ const StepFour = () => {
         const res = await getFormFields(4);
         setFieldMap(res.fieldMap || {});
       } catch {
-        setErrorMessage("Could not load form fields.");
-        setShowErrorModal(true);
+        setModal({ type: "error", message: "Could not load form fields." });
       }
     })();
   }, [fieldMap]);
@@ -37,43 +34,45 @@ const StepFour = () => {
   const handleBack = () => navigate(-1);
 
   const handleSubmit = async () => {
-    const newErrors = validate(formData);
-    if (Object.keys(newErrors).length > 0) return;
+    const validationErrors = validate(formData);
+    if (Object.keys(validationErrors).length > 0) return;
 
     if (!fieldMap) {
-      setErrorMessage("Form fields not loaded.");
-      setShowErrorModal(true);
+      setModal({ type: "error", message: "Form fields not loaded." });
       return;
     }
 
     setIsLoading(true);
     try {
-      let uploadedFiles = [];
-      if (Array.isArray(formData.images) && formData.images.length > 0) {
-        uploadedFiles = await Promise.all(
-          formData.images.map(async (file) => {
-            const result = await uploadNinjaFile(file);
-            if (!result?.success || !result.wpResponse?.data?.tmp_name) {
-              throw new Error(result?.error || "File upload failed");
-            }
-            return { name: file.name, tmp_name: result.wpResponse.data.tmp_name };
-          })
-        );
+      const uploadedFiles = await Promise.all(
+        (formData.images || []).map(async (file) => {
+          const result = await uploadNinjaFile(file);
+          if (!result?.success || !result.wpResponse?.data?.tmp_name) {
+            throw new Error(result?.error || "File upload failed");
+          }
+          return { name: file.name, tmp_name: result.wpResponse.data.tmp_name };
+        })
+      );
+
+      const response = await submitBusinessForm(formData, 4, uploadedFiles);
+      if (!response.success) {
+        throw new Error(response.error || "Form submission failed");
       }
 
-      const data = await submitBusinessForm(formData, 4, uploadedFiles);
-
-      if (!data.success) {
-        throw new Error(data.error || "Form submission failed");
-      }
-      setShowModal(true);
+      setModal({ type: "success", message: "Your business has been successfully listed." });
     } catch (err) {
-      setErrorMessage(err.message);
-      setShowErrorModal(true);
+      setModal({ type: "error", message: err.message });
     } finally {
       setIsLoading(false);
     }
   };
+
+  const renderReviewItem = (label, value, errorKey) => (
+    <li>
+      <strong>{label}:</strong> {value}
+      {errors[errorKey] && <p className="text-red-500 text-xs">{errors[errorKey]}</p>}
+    </li>
+  );
 
   return (
     <main className="font-sans bg-white min-h-screen flex flex-col relative">
@@ -81,49 +80,20 @@ const StepFour = () => {
 
       <div className="flex-grow pt-32 pb-24 px-4 max-w-3xl mx-auto">
         <div className="bg-gray-50 rounded-lg p-6 border border-gray-200 mb-8">
-          <h2 className="text-lg font-semibold mb-4 text-gray-800">
-            Review your submission
-          </h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-800">Review your submission</h2>
           <ul className="text-sm text-gray-700 space-y-2">
-            <li>
-              <strong>Business Name:</strong> {formData.businessName}
-              {errors.businessName && (
-                <p className="text-red-500 text-xs">{errors.businessName}</p>
-              )}
-            </li>
-            <li>
-              <strong>CAC Registered:</strong>{" "}
-              {formData.isCACRegistered ? "Yes" : "No"}
-            </li>
-            <li>
-              <strong>Slogan:</strong> {formData.slogan}
-            </li>
-            <li>
-              <strong>Has Branches:</strong>{" "}
-              {formData.hasBranches ? "Yes" : "No"}
-            </li>
-            <li>
-              <strong>Phone:</strong> {formData.phone}
-              {errors.phone && <p className="text-red-500 text-xs">{errors.phone}</p>}
-            </li>
-            <li>
-              <strong>Email:</strong> {formData.email}
-              {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
-            </li>
-            <li>
-              <strong>Tags:</strong> {formData.tags}
-              {errors.tags && <p className="text-red-500 text-xs">{errors.tags}</p>}
-            </li>
-            <li>
-              <strong>Description:</strong> {formData.description}
-            </li>
-            <li>
-              <strong>Images:</strong> {formData.images?.length || 0} file(s) selected
-            </li>
+            {renderReviewItem("Business Name", formData.businessName, "businessName")}
+            <li><strong>CAC Registered:</strong> {formData.isCACRegistered ? "Yes" : "No"}</li>
+            <li><strong>Slogan:</strong> {formData.slogan}</li>
+            <li><strong>Has Branches:</strong> {formData.hasBranches ? "Yes" : "No"}</li>
+            {renderReviewItem("Phone", formData.phone, "phone")}
+            {renderReviewItem("Email", formData.email, "email")}
+            {renderReviewItem("Tags", formData.tags, "tags")}
+            <li><strong>Description:</strong> {formData.description}</li>
+            <li><strong>Images:</strong> {formData.images?.length || 0} file(s) selected</li>
           </ul>
         </div>
 
-        {/* Actions */}
         <div className="pt-4 flex gap-4">
           <button
             type="button"
@@ -145,42 +115,29 @@ const StepFour = () => {
 
       <Footer />
 
-      {/* Success Modal */}
-      {showModal && (
+      {modal.type && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-sm mx-auto rounded-lg shadow-lg p-6 text-center">
-            <h3 className="text-xl font-semibold text-green-600 mb-3">
-              🎉 Submission Successful!
+            <h3
+              className={`text-xl font-semibold mb-3 ${
+                modal.type === "success" ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {modal.type === "success" ? "🎉 Submission Successful!" : "❌ Submission Failed"}
             </h3>
-            <p className="text-sm text-gray-700 mb-6">
-              Your business has been successfully listed.
-            </p>
+            <p className="text-sm text-gray-700 mb-6">{modal.message}</p>
             <button
               onClick={() => {
-                setShowModal(false);
-                navigate("/");
+                setModal({ type: null, message: "" });
+                if (modal.type === "success") navigate("/");
               }}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-2 rounded-full transition"
+              className={`px-6 py-2 rounded-full transition ${
+                modal.type === "success"
+                  ? "bg-yellow-500 hover:bg-yellow-600 text-white"
+                  : "bg-red-500 hover:bg-red-600 text-white"
+              }`}
             >
-              Go Home
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Error Modal */}
-      {showErrorModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-sm mx-auto rounded-lg shadow-lg p-6 text-center">
-            <h3 className="text-xl font-semibold text-red-600 mb-3">
-              ❌ Submission Failed
-            </h3>
-            <p className="text-sm text-gray-700 mb-6">{errorMessage}</p>
-            <button
-              onClick={() => setShowErrorModal(false)}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full transition"
-            >
-              Close
+              {modal.type === "success" ? "Go Home" : "Close"}
             </button>
           </div>
         </div>
