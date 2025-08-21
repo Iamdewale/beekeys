@@ -1,22 +1,11 @@
-// src/pages/StateDetails.jsx
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import NavbarNG from "../components/NavbarNG";
 import Footer from "../components/Footer";
-import { fetchStateDetails } from "../services/api";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
+import { fetchStateDetails, fetchMarkersInViewport } from "../services/api";
 import StateHero from "../components/StateHero";
-import stateHeroImg from "../assets/images/statehero.jpg"; // adjust path if needed
-
-// Default Leaflet marker icon
-const DefaultIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-});
-L.Marker.prototype.options.icon = DefaultIcon;
+import StateMap from "../components/StateMap";
+import stateHeroImg from "../assets/images/statehero.jpg";
 
 const NoResults = ({ stateName }) => (
   <div className="text-gray-600 my-8 text-center">
@@ -56,6 +45,23 @@ export default function StateDetails() {
     loadDetails();
   }, [slug]);
 
+  const handleBoundsChange = async (bounds) => {
+    if (!region?.slug) return;
+    const params = {
+      north: bounds.getNorthEast().lat,
+      south: bounds.getSouthWest().lat,
+      east: bounds.getNorthEast().lng,
+      west: bounds.getSouthWest().lng,
+      region: region.slug,
+    };
+    try {
+      const data = await fetchMarkersInViewport(params);
+      setMarkers(data.markers);
+    } catch (err) {
+      console.error("Failed to fetch viewport markers", err);
+    }
+  };
+
   const renderRegionInfo = () =>
     region && (
       <div className="mb-6 text-gray-700">
@@ -68,39 +74,12 @@ export default function StateDetails() {
       </div>
     );
 
-  const renderMap = () => {
-    if (!markers.length || !markers[0]?.lat || !markers[0]?.lng) return null;
-    return (
+  const renderMap = () =>
+    markers.length > 0 && (
       <div className="h-96 w-full mb-8 rounded-lg shadow overflow-hidden">
-        <MapContainer
-          center={[markers[0].lat, markers[0].lng]}
-          zoom={7}
-          className="h-full w-full"
-        >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {markers.map((item) => (
-            <Marker
-              key={item.id}
-              position={[item.lat, item.lng]}
-              eventHandlers={{ click: () => navigate(`/business/${item.id}`) }}
-            >
-              <Popup>
-                <div className="text-center">
-                  <h3 className="font-semibold">{item.title}</h3>
-                  <button
-                    onClick={() => navigate(`/business/${item.id}`)}
-                    className="mt-2 text-blue-600 hover:underline text-sm"
-                  >
-                    View Details
-                  </button>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+        <StateMap markers={markers} onBoundsChange={handleBoundsChange} />
       </div>
     );
-  };
 
   const renderGrid = () =>
     markers.length > 0 && (
@@ -144,8 +123,6 @@ export default function StateDetails() {
       />
 
       <section className="px-6 pt-16 pb-16 max-w-6xl mx-auto">
-        
-
         {loading && <p className="text-gray-600">Loading services...</p>}
         {error && <p className="text-red-500">{error}</p>}
 

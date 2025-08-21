@@ -1,3 +1,5 @@
+// src/services/api.js
+
 const BASE_URL = "https://beekeys-proxy.onrender.com";
 
 /**
@@ -27,39 +29,40 @@ async function fetchJSON(endpoint, errorMsg = "Request failed", fallback = null)
 }
 
 /**
- * 🔎 Search businesses.
+ * 🔎 Search businesses by query.
  */
-export const searchBusinesses = async (query) =>
-  fetchJSON(
+async function searchBusinesses(query) {
+  return fetchJSON(
     `/api/businesses?search=${encodeURIComponent(query)}`,
     "Failed to fetch business search results",
     { success: false, results: [] }
   );
+}
 
 /**
  * 📍 Get single business details by ID.
  */
-export const fetchBusinessDetails = async (id) => {
+async function fetchBusinessDetails(id) {
   const data = await fetchJSON(
     `/api/business/${id}`,
     "Failed to fetch business details",
     { business: null }
   );
   return data.business;
-};
+}
 
 /**
  * 🌍 Fetch all regions.
  */
-export const fetchRegions = async () => {
+async function fetchRegions() {
   const data = await fetchJSON("/api/regions", "Failed to fetch regions", { data: [] });
   return Array.isArray(data.data) ? data.data : [];
-};
+}
 
 /**
  * 🗺️ Get combined state details (region + markers).
  */
-export const fetchStateDetails = async (slug) => {
+async function fetchStateDetails(slug) {
   const data = await fetchJSON(
     `/api/state-details/${encodeURIComponent(slug)}`,
     `Failed to fetch state details for ${slug}`,
@@ -69,13 +72,24 @@ export const fetchStateDetails = async (slug) => {
     region: data.region,
     markers: Array.isArray(data.markers) ? data.markers : []
   };
-};
+}
 
 /**
- * 📤 Submit business form.
+ * 📍 Fetch markers within a viewport.
  */
+async function fetchMarkersInViewport({ north, south, east, west, region }) {
+  const params = new URLSearchParams({ north, south, east, west, region });
+  return fetchJSON(
+    `/api/markers-in-viewport?${params}`,
+    "Failed to fetch viewport markers",
+    { markers: [] }
+  );
+}
 
-export const submitBusinessForm = async (formData, uploadedFiles = []) => {
+/**
+ * 📤 Submit business form with optional file uploads.
+ */
+async function submitBusinessForm(formData, uploadedFiles = []) {
   const payload = { ...formData, uploadedFiles };
 
   try {
@@ -106,4 +120,14 @@ export const submitBusinessForm = async (formData, uploadedFiles = []) => {
     console.error("❌ submitBusinessForm error:", err);
     return { success: false, error: err.message };
   }
+}
+
+// 🧾 Export all functions
+export {
+  searchBusinesses,
+  fetchBusinessDetails,
+  fetchRegions,
+  fetchStateDetails,
+  fetchMarkersInViewport,
+  submitBusinessForm
 };
