@@ -17,6 +17,8 @@ function ViewportWatcher({ onBoundsChange }) {
       onBoundsChange(bounds);
     },
   });
+
+
   return null;
 }
 
@@ -34,6 +36,8 @@ export default function StateMap({ markers, onBoundsChange }) {
           position={[item.lat, item.lng]}
           eventHandlers={{ click: () => navigate(`/business/${item.id}`) }}
         >
+
+          
           <Popup>
             <div className="text-center">
               <h3 className="font-semibold">{item.title}</h3>
