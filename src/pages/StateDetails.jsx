@@ -7,6 +7,10 @@ import StateHero from "../components/StateHero";
 import StateMap from "../components/StateMap";
 import stateHeroImg from "../assets/images/statehero.jpg";
 
+// 🔹 Constants
+const CATEGORIES = ["all", "hospital", "clinic", "fire-station"];
+
+// 🔹 Subcomponents
 const NoResults = ({ stateName }) => (
   <div className="text-gray-600 my-8 text-center">
     <p className="mb-2 font-medium">
@@ -16,6 +20,89 @@ const NoResults = ({ stateName }) => (
   </div>
 );
 
+const RegionInfo = ({ region }) => (
+  <div className="mb-6 text-gray-700">
+    <p>
+      <strong>Region Name:</strong> {region.name}
+    </p>
+    <p>
+      <strong>Slug:</strong> {region.slug}
+    </p>
+  </div>
+);
+
+const Filters = ({ selectedCategory, setSelectedCategory, viewMode, setViewMode }) => (
+  <div className="flex flex-wrap gap-4 items-center mb-6">
+    <div className="flex gap-2">
+      {CATEGORIES.map((cat) => (
+        <button
+          key={cat}
+          className={`px-3 py-1 rounded ${
+            selectedCategory === cat
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 text-gray-700"
+          }`}
+          onClick={() => setSelectedCategory(cat)}
+        >
+          {cat === "all" ? "All Services" : cat.replace("-", " ")}
+        </button>
+      ))}
+    </div>
+    <div className="ml-auto">
+      <button
+        className="px-3 py-1 border rounded text-sm"
+        onClick={() => setViewMode((prev) => (prev === "map" ? "grid" : "map"))}
+      >
+        Switch to {viewMode === "map" ? "Grid" : "Map"} View
+      </button>
+    </div>
+  </div>
+);
+
+const Summary = ({ count, stateName }) => (
+  <p className="text-sm text-gray-600 mb-4">
+    Showing {count} service{count !== 1 ? "s" : ""} in {stateName}
+  </p>
+);
+
+const ServiceMapWrapper = ({ markers, viewportLoading, onBoundsChange }) => (
+  <div className="h-96 w-full mb-8 rounded-lg shadow overflow-hidden relative">
+    {viewportLoading && (
+      <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+        <p className="text-gray-600 text-sm">Updating map...</p>
+      </div>
+    )}
+    <StateMap markers={markers} onBoundsChange={onBoundsChange} />
+  </div>
+);
+
+const ServiceGrid = ({ markers, onNavigate }) => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
+    {markers.map((item) => (
+      <div
+        key={item.id}
+        className="bg-white rounded shadow p-4 cursor-pointer hover:shadow-md transition"
+        onClick={() => onNavigate(`/business/${item.id}`)}
+      >
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          {item.title}
+        </h3>
+        <p className="text-sm text-gray-500">
+          Lat: {item.lat}, Lng: {item.lng}
+        </p>
+        {item.icon && (
+          <img
+            src={item.icon}
+            alt={item.title}
+            className="w-10 h-10 mt-2"
+          />
+        )}
+      </div>
+    ))}
+  </div>
+);
+
+// 🔹 Main Component
 export default function StateDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -73,97 +160,7 @@ export default function StateDetails() {
     return markers.filter((m) => m.category === selectedCategory);
   }, [markers, selectedCategory]);
 
-  const renderRegionInfo = () =>
-    region && (
-      <div className="mb-6 text-gray-700">
-        <p>
-          <strong>Region Name:</strong> {region.name}
-        </p>
-        <p>
-          <strong>Slug:</strong> {region.slug}
-        </p>
-      </div>
-    );
-
-  const renderFilters = () => {
-    const categories = ["all", "hospital", "clinic", "fire-station"];
-    return (
-      <div className="flex flex-wrap gap-4 items-center mb-6">
-        <div className="flex gap-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`px-3 py-1 rounded ${
-                selectedCategory === cat
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700"
-              }`}
-              onClick={() => setSelectedCategory(cat)}
-            >
-              {cat === "all" ? "All Services" : cat.replace("-", " ")}
-            </button>
-          ))}
-        </div>
-        <div className="ml-auto">
-          <button
-            className="px-3 py-1 border rounded text-sm"
-            onClick={() =>
-              setViewMode((prev) => (prev === "map" ? "grid" : "map"))
-            }
-          >
-            Switch to {viewMode === "map" ? "Grid" : "Map"} View
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderSummary = () => (
-    <p className="text-sm text-gray-600 mb-4">
-      Showing {filteredMarkers.length} service
-      {filteredMarkers.length !== 1 ? "s" : ""} in {displayName}
-    </p>
-  );
-
-  const renderMap = () =>
-    filteredMarkers.length > 0 && (
-      <div className="h-96 w-full mb-8 rounded-lg shadow overflow-hidden relative">
-        {viewportLoading && (
-          <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
-            <p className="text-gray-600 text-sm">Updating map...</p>
-          </div>
-        )}
-        <StateMap markers={filteredMarkers} onBoundsChange={handleBoundsChange} />
-      </div>
-    );
-
-  const renderGrid = () =>
-    filteredMarkers.length > 0 && (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-        {filteredMarkers.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white rounded shadow p-4 cursor-pointer hover:shadow-md transition"
-            onClick={() => navigate(`/business/${item.id}`)}
-          >
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              {item.title}
-            </h3>
-            <p className="text-sm text-gray-500">
-              Lat: {item.lat}, Lng: {item.lng}
-            </p>
-            {item.icon && (
-              <img
-                src={item.icon}
-                alt={item.title}
-                className="w-10 h-10 mt-2"
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    );
-
+  // 🔹 Render
   return (
     <main className="font-sans">
       <NavbarNG />
@@ -184,11 +181,28 @@ export default function StateDetails() {
 
         {!loading && !error && (
           <>
-            {renderRegionInfo()}
-            {renderFilters()}
-            {renderSummary()}
+            {region && <RegionInfo region={region} />}
+            <Filters
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+            />
+            <Summary count={filteredMarkers.length} stateName={displayName} />
+
             {filteredMarkers.length > 0 ? (
-              viewMode === "map" ? renderMap() : renderGrid()
+              viewMode === "map" ? (
+                <ServiceMapWrapper
+                  markers={filteredMarkers}
+                  viewportLoading={viewportLoading}
+                  onBoundsChange={handleBoundsChange}
+                />
+              ) : (
+                <ServiceGrid
+                  markers={filteredMarkers}
+                  onNavigate={navigate}
+                />
+              )
             ) : (
               <NoResults stateName={displayName} />
             )}
