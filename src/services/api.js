@@ -5,12 +5,16 @@ const BASE_URL = "https://beekeys-proxy.onrender.com";
 /**
  * 🛠 Generic JSON fetch helper with consistent error handling.
  */
-async function fetchJSON(endpoint, errorMsg = "Request failed", fallback = null) {
+async function fetchJSON(endpoint, {
+  errorMsg = "Request failed",
+  fallback = null,
+  options = {}
+} = {}) {
   try {
-    const res = await fetch(`${BASE_URL}${endpoint}`);
+    const res = await fetch(`${BASE_URL}${endpoint}`, options);
     const text = await res.text();
 
-    let data = {};
+    let data;
     try {
       data = text ? JSON.parse(text) : {};
     } catch {
@@ -32,22 +36,20 @@ async function fetchJSON(endpoint, errorMsg = "Request failed", fallback = null)
  * 🔎 Search businesses by query.
  */
 async function searchBusinesses(query) {
-  return fetchJSON(
-    `/api/businesses?search=${encodeURIComponent(query)}`,
-    "Failed to fetch business search results",
-    { success: false, results: [] }
-  );
+  return fetchJSON(`/api/businesses?search=${encodeURIComponent(query)}`, {
+    errorMsg: "Failed to fetch business search results",
+    fallback: { success: false, results: [] }
+  });
 }
 
 /**
  * 📍 Get single business details by ID.
  */
 async function fetchBusinessDetails(id) {
-  const data = await fetchJSON(
-    `/api/business/${id}`,
-    "Failed to fetch business details",
-    { business: null }
-  );
+  const data = await fetchJSON(`/api/business/${id}`, {
+    errorMsg: "Failed to fetch business details",
+    fallback: { business: null }
+  });
   return data.business;
 }
 
@@ -55,7 +57,10 @@ async function fetchBusinessDetails(id) {
  * 🌍 Fetch all regions.
  */
 async function fetchRegions() {
-  const data = await fetchJSON("/api/regions", "Failed to fetch regions", { data: [] });
+  const data = await fetchJSON("/api/regions", {
+    errorMsg: "Failed to fetch regions",
+    fallback: { data: [] }
+  });
   return Array.isArray(data.data) ? data.data : [];
 }
 
@@ -63,11 +68,10 @@ async function fetchRegions() {
  * 🗺️ Get combined state details (region + markers).
  */
 async function fetchStateDetails(slug) {
-  const data = await fetchJSON(
-    `/api/state-details/${encodeURIComponent(slug)}`,
-    `Failed to fetch state details for ${slug}`,
-    { region: null, markers: [] }
-  );
+  const data = await fetchJSON(`/api/state-details/${encodeURIComponent(slug)}`, {
+    errorMsg: `Failed to fetch state details for ${slug}`,
+    fallback: { region: null, markers: [] }
+  });
   return {
     region: data.region,
     markers: Array.isArray(data.markers) ? data.markers : []
@@ -79,11 +83,10 @@ async function fetchStateDetails(slug) {
  */
 async function fetchMarkersInViewport({ north, south, east, west, region }) {
   const params = new URLSearchParams({ north, south, east, west, region });
-  return fetchJSON(
-    `/api/markers-in-viewport?${params}`,
-    "Failed to fetch viewport markers",
-    { markers: [] }
-  );
+  return fetchJSON(`/api/markers-in-viewport?${params.toString()}`, {
+    errorMsg: "Failed to fetch viewport markers",
+    fallback: { markers: [] }
+  });
 }
 
 /**
@@ -92,34 +95,18 @@ async function fetchMarkersInViewport({ north, south, east, west, region }) {
 async function submitBusinessForm(formData, uploadedFiles = []) {
   const payload = { ...formData, uploadedFiles };
 
-  try {
-    const res = await fetch(`${BASE_URL}/submit-business`, {
+  return fetchJSON("/submit-business", {
+    errorMsg: "Form submission failed",
+    fallback: { success: false, error: "Unknown error" },
+    options: {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "X-Proxy-Secret": process.env.REACT_APP_PROXY_SECRET
       },
       body: JSON.stringify(payload)
-    });
-
-    const text = await res.text();
-    let data = {};
-
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch (err) {
-      console.warn("⚠️ Failed to parse JSON:", err);
     }
-
-    if (!res.ok) {
-      throw new Error(data?.error || `Form submission failed (status ${res.status})`);
-    }
-
-    return data;
-  } catch (err) {
-    console.error("❌ submitBusinessForm error:", err);
-    return { success: false, error: err.message };
-  }
+  });
 }
 
 // 🧾 Export all functions

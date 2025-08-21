@@ -10,29 +10,24 @@ import stateHeroImg from "../assets/images/statehero.jpg";
 // 🔹 Constants
 const CATEGORIES = ["all", "hospital", "clinic", "fire-station"];
 
-// 🔹 Subcomponents
+// 🔹 UI Components
 const NoResults = ({ stateName }) => (
   <div className="text-gray-600 my-8 text-center">
-    <p className="mb-2 font-medium">
-      No services currently listed for {stateName}.
-    </p>
+    <p className="mb-2 font-medium">No services currently listed for {stateName}.</p>
     <p className="text-sm">Please check back later or try another state.</p>
   </div>
 );
 
-const RegionInfo = ({ region }) => (
+const RegionInfo = ({ name, slug }) => (
   <div className="mb-6 text-gray-700">
-    <p>
-      <strong>Region Name:</strong> {region.name}
-    </p>
-    <p>
-      <strong>Slug:</strong> {region.slug}
-    </p>
+    <p><strong>Region Name:</strong> {name}</p>
+    <p><strong>Slug:</strong> {slug}</p>
   </div>
 );
 
 const Filters = ({ selectedCategory, setSelectedCategory, viewMode, setViewMode }) => (
   <div className="flex flex-wrap gap-4 items-center mb-6">
+    {/* Category filters */}
     <div className="flex gap-2">
       {CATEGORIES.map((cat) => (
         <button
@@ -48,14 +43,13 @@ const Filters = ({ selectedCategory, setSelectedCategory, viewMode, setViewMode 
         </button>
       ))}
     </div>
-    <div className="ml-auto">
-      <button
-        className="px-3 py-1 border rounded text-sm"
-        onClick={() => setViewMode((prev) => (prev === "map" ? "grid" : "map"))}
-      >
-        Switch to {viewMode === "map" ? "Grid" : "Map"} View
-      </button>
-    </div>
+    {/* Toggle view */}
+    <button
+      className="ml-auto px-3 py-1 border rounded text-sm"
+      onClick={() => setViewMode(viewMode === "map" ? "grid" : "map")}
+    >
+      Switch to {viewMode === "map" ? "Grid" : "Map"} View
+    </button>
   </div>
 );
 
@@ -65,9 +59,9 @@ const Summary = ({ count, stateName }) => (
   </p>
 );
 
-const ServiceMapWrapper = ({ markers, viewportLoading, onBoundsChange }) => (
+const ServiceMapWrapper = ({ markers, loading, onBoundsChange }) => (
   <div className="h-96 w-full mb-8 rounded-lg shadow overflow-hidden relative">
-    {viewportLoading && (
+    {loading && (
       <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
         <p className="text-gray-600 text-sm">Updating map...</p>
       </div>
@@ -78,25 +72,15 @@ const ServiceMapWrapper = ({ markers, viewportLoading, onBoundsChange }) => (
 
 const ServiceGrid = ({ markers, onNavigate }) => (
   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-6">
-    {markers.map((item) => (
+    {markers.map(({ id, title, lat, lng, icon }) => (
       <div
-        key={item.id}
+        key={id}
         className="bg-white rounded shadow p-4 cursor-pointer hover:shadow-md transition"
-        onClick={() => onNavigate(`/business/${item.id}`)}
+        onClick={() => onNavigate(`/business/${id}`)}
       >
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
-          {item.title}
-        </h3>
-        <p className="text-sm text-gray-500">
-          Lat: {item.lat}, Lng: {item.lng}
-        </p>
-        {item.icon && (
-          <img
-            src={item.icon}
-            alt={item.title}
-            className="w-10 h-10 mt-2"
-          />
-        )}
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">{title}</h3>
+        <p className="text-sm text-gray-500">Lat: {lat}, Lng: {lng}</p>
+        {icon && <img src={icon} alt={title} className="w-10 h-10 mt-2" />}
       </div>
     ))}
   </div>
@@ -107,16 +91,18 @@ export default function StateDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
 
+  // State
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [region, setRegion] = useState(null);
   const [markers, setMarkers] = useState([]);
-  const [error, setError] = useState("");
   const [viewportLoading, setViewportLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [viewMode, setViewMode] = useState("map");
 
   const displayName = useMemo(() => slug.replace(/-/g, " "), [slug]);
 
+  // Fetch state details
   useEffect(() => {
     const loadDetails = async () => {
       setLoading(true);
@@ -135,29 +121,35 @@ export default function StateDetails() {
     loadDetails();
   }, [slug]);
 
-  const handleBoundsChange = useCallback(async (bounds) => {
-    if (!region?.slug) return;
-    setViewportLoading(true);
-    try {
-      const params = {
-        north: bounds.getNorthEast().lat,
-        south: bounds.getSouthWest().lat,
-        east: bounds.getNorthEast().lng,
-        west: bounds.getSouthWest().lng,
-        region: region.slug,
-      };
-      const data = await fetchMarkersInViewport(params);
-      setMarkers(data.markers);
-    } catch (err) {
-      console.error("Failed to fetch viewport markers", err);
-    } finally {
-      setViewportLoading(false);
-    }
-  }, [region]);
+  // Handle viewport change (map bounds)
+  const handleBoundsChange = useCallback(
+    async (bounds) => {
+      if (!region?.slug) return;
+      setViewportLoading(true);
+      try {
+        const params = {
+          north: bounds.getNorthEast().lat,
+          south: bounds.getSouthWest().lat,
+          east: bounds.getNorthEast().lng,
+          west: bounds.getSouthWest().lng,
+          region: region.slug,
+        };
+        const data = await fetchMarkersInViewport(params);
+        setMarkers(data.markers);
+      } catch (err) {
+        console.error("Failed to fetch viewport markers", err);
+      } finally {
+        setViewportLoading(false);
+      }
+    },
+    [region]
+  );
 
+  // Filter markers
   const filteredMarkers = useMemo(() => {
-    if (selectedCategory === "all") return markers;
-    return markers.filter((m) => m.category === selectedCategory);
+    return selectedCategory === "all"
+      ? markers
+      : markers.filter((m) => m.category === selectedCategory);
   }, [markers, selectedCategory]);
 
   // 🔹 Render
@@ -181,7 +173,7 @@ export default function StateDetails() {
 
         {!loading && !error && (
           <>
-            {region && <RegionInfo region={region} />}
+            {region && <RegionInfo name={region.name} slug={region.slug} />}
             <Filters
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
@@ -194,14 +186,11 @@ export default function StateDetails() {
               viewMode === "map" ? (
                 <ServiceMapWrapper
                   markers={filteredMarkers}
-                  viewportLoading={viewportLoading}
+                  loading={viewportLoading}
                   onBoundsChange={handleBoundsChange}
                 />
               ) : (
-                <ServiceGrid
-                  markers={filteredMarkers}
-                  onNavigate={navigate}
-                />
+                <ServiceGrid markers={filteredMarkers} onNavigate={navigate} />
               )
             ) : (
               <NoResults stateName={displayName} />
